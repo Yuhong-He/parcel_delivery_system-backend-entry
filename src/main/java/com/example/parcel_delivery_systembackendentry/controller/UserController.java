@@ -161,4 +161,13 @@ public class UserController {
         }
     }
 
+    @GetMapping("/searchStudentByName")
+    public Result<Object> searchStudentByName(@RequestParam("searchTxt") String searchTxt) {
+        if(!searchTxt.isEmpty()) {
+            return Result.ok(userService.getStudentsBySearchName(searchTxt));
+        } else {
+            return Result.error(ResultCodeEnum.EMPTY_SEARCH);
+        }
+    }
+
 }

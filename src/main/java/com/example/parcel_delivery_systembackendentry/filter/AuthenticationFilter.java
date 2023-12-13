@@ -46,7 +46,7 @@ public class AuthenticationFilter implements Filter {
         String[] unregisteredRights = PermissionHelper.unregistered();
         String[] studentRights = PermissionHelper.student();
         String[] postmanRights = PermissionHelper.postman();
-        String[] mervillStaffRights = PermissionHelper.mervillStaff();
+        String[] mervilleStaffRights = PermissionHelper.mervilleStaff();
         String[] estateServiceStaffRights = PermissionHelper.estateServiceStaff();
 
         // 2. If the request is for unregistered user
@@ -61,8 +61,8 @@ public class AuthenticationFilter implements Filter {
             rights = "Student";
         } else if(match(postmanRights, requestURI)) {
             rights = "Postman";
-        } else if(match(mervillStaffRights, requestURI)) {
-            rights = "Mervill Staff";
+        } else if(match(mervilleStaffRights, requestURI)) {
+            rights = "Merville Staff";
         } else if(match(estateServiceStaffRights, requestURI)) {
             rights = "Estate Service Staff";
         }
@@ -107,8 +107,8 @@ public class AuthenticationFilter implements Filter {
                                         action(response, Result.error(ResultCodeEnum.NO_PERMISSION));
                                     }
                                     break;
-                                case "Mervill Staff":
-                                    if (user.getType() == UserTypeEnum.MervillStaff.getType()) {
+                                case "Merville Staff":
+                                    if (user.getType() == UserTypeEnum.MervilleStaff.getType()) {
                                         BaseContext.setCurrentId(userId);
                                         filterChain.doFilter(request, response);
                                     } else {

@@ -5,6 +5,7 @@ import lombok.Getter;
 @Getter
 public enum ResultCodeEnum {
 
+    // user related
     SUCCESS(200,"Success"),
     FAIL(201, "Fail"),
     NOT_REGISTERED_API(202, "Not Registered API"),
@@ -23,7 +24,12 @@ public enum ResultCodeEnum {
     NO_VERIFICATION_CODE(218, "Verification code does not send before"),
     TOKEN_EXPIRED(223,"Token Expired"),
     TOKEN_ERROR(224,"Invalid Token"),
-    MISS_TOKEN(225,"Bad Request: Token Missing");
+    MISS_TOKEN(225,"Bad Request: Token Missing"),
+    EMPTY_SEARCH(226, "Empty Search"),
+    STUDENT_NOT_EXIST(227, "Student Not Exist"),
+
+    // parcel related
+    ParcelInfoIncomplete(301, "Parcel Info Incomplete");
 
     private final Integer code;
 

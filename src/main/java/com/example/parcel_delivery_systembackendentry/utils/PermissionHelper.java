@@ -4,9 +4,9 @@ public class PermissionHelper {
 
     public static String[] unregistered() {
         return new String[]{
-                "/api/user/login",
-                "/api/user/sendRegisterEmail",
-                "/api/user/register"
+                "/user/login",
+                "/user/sendRegisterEmail",
+                "/user/register"
         };
     }
 
@@ -22,7 +22,7 @@ public class PermissionHelper {
         };
     }
 
-    public static String[] mervillStaff() {
+    public static String[] mervilleStaff() {
         return new String[]{
 
         };
@@ -30,7 +30,8 @@ public class PermissionHelper {
 
     public static String[] estateServiceStaff() {
         return new String[]{
-
+            "/user/searchStudentByName",
+            "/parcel/create"
         };
     }
 

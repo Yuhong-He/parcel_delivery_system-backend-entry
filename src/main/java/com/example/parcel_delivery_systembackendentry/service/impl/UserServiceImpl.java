@@ -3,10 +3,13 @@ package com.example.parcel_delivery_systembackendentry.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.example.parcel_delivery_systembackendentry.entity.User;
+import com.example.parcel_delivery_systembackendentry.enumeration.UserTypeEnum;
 import com.example.parcel_delivery_systembackendentry.mapper.UserMapper;
 import com.example.parcel_delivery_systembackendentry.service.UserService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service("userServiceImpl")
 public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements UserService {
@@ -40,6 +43,23 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     public User getUserByEmail(String email, int type) {
         QueryWrapper<User> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("email", email);
+        queryWrapper.eq("type", type);
+        return baseMapper.selectOne(queryWrapper);
+    }
+
+    @Override
+    public List<User> getStudentsBySearchName(String name) {
+        QueryWrapper<User> queryWrapper = new QueryWrapper<>();
+        queryWrapper.like("username", name);
+        queryWrapper.eq("type", UserTypeEnum.Student.getType());
+        return baseMapper.selectList(queryWrapper);
+    }
+
+    @Override
+    public User getStudentById(int id) {
+        QueryWrapper<User> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("id", id);
+        queryWrapper.eq("type", UserTypeEnum.Student.getType());
         return baseMapper.selectOne(queryWrapper);
     }
 }

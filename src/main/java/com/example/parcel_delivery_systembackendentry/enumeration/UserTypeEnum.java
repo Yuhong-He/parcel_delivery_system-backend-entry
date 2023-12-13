@@ -6,7 +6,7 @@ import lombok.Getter;
 public enum UserTypeEnum {
     Student(1),
     Postman(2),
-    MervillStaff(3),
+    MervilleStaff(3),
     EstateServiceStaff(4);
 
     private final Integer type;

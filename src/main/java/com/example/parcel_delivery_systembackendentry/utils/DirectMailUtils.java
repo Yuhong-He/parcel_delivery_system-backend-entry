@@ -23,8 +23,8 @@ public class DirectMailUtils {
 
             SingleSendMailRequest request = new SingleSendMailRequest();
             request.setRegionId("ap-southeast-1");
-            request.setAccountName("no_reply@mail.yunnanhistory.com");
-            request.setFromAlias("滇史论辑 Yunhists");
+            request.setAccountName("no_reply@mail.ucdparcel.ie");
+            request.setFromAlias("UCD Parcel");
             request.setAddressType(1);
             request.setReplyToAddress(true);
             request.setToAddress(email);
