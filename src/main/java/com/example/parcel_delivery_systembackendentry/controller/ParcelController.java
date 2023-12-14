@@ -7,6 +7,9 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.example.parcel_delivery_systembackendentry.common.BaseContext;
 import com.example.parcel_delivery_systembackendentry.common.Result;
 import com.example.parcel_delivery_systembackendentry.dto.CreateParcelData;
+import com.example.parcel_delivery_systembackendentry.dto.CustomPage;
+import com.example.parcel_delivery_systembackendentry.dto.ParcelWithStudentInfo;
+import com.example.parcel_delivery_systembackendentry.dto.StudentInfo;
 import com.example.parcel_delivery_systembackendentry.entity.Parcel;
 import com.example.parcel_delivery_systembackendentry.entity.ParcelTrack;
 import com.example.parcel_delivery_systembackendentry.entity.User;
@@ -19,6 +22,7 @@ import com.example.parcel_delivery_systembackendentry.utils.ParcelUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @CrossOrigin
@@ -61,14 +65,20 @@ public class ParcelController {
     public Result<Object> getParcelList(@RequestParam("page") Integer pageNo) {
         User currentUser = userService.getUserById(Math.toIntExact(BaseContext.getCurrentId()));
         if (currentUser.getType() == UserTypeEnum.EstateServiceStaff.getType()) {
-//            QueryWrapper<Parcel> queryWrapper = new QueryWrapper<>();
-//            queryWrapper.eq("id", "197bc778-f273-4480-95a6-405f448fe9b2");
-//            Parcel parcel = parcelService.getOne(queryWrapper);
-//            System.out.println(parcel.getLast_update_desc());
-//            System.out.println(parcel.getLast_update_at());
             Page<Parcel> page = new Page<>(pageNo, 10);
             IPage<Parcel> pageRs =  parcelService.getCategoryByNameLike(page);
-            return Result.ok(pageRs);
+            List<Parcel> list = pageRs.getRecords();
+            List<ParcelWithStudentInfo> newList = new ArrayList<>();
+            for(Parcel p : list) {
+                User student = userService.getStudentById(p.getStudent());
+                ParcelWithStudentInfo parcelWithStudentInfo = new ParcelWithStudentInfo(
+                        p.getId(), new StudentInfo(student.getUsername(), student.getEmail()),
+                        p.getType(), p.getAddress1(), p.getAddress2(), p.getLastUpdateDesc(), p.getLastUpdateAt());
+                newList.add(parcelWithStudentInfo);
+            }
+            CustomPage customPage = new CustomPage(newList, pageRs.getTotal(), pageRs.getSize(),
+                    pageRs.getCurrent(), pageRs.getPages());
+            return Result.ok(customPage);
         } else {
             System.out.println("aaa");
             return Result.error(ResultCodeEnum.NO_PERMISSION);

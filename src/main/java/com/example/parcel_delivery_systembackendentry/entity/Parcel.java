@@ -31,10 +31,10 @@ public class Parcel {
     private int student;
 
     @TableField("last_update_desc")
-    private String last_update_desc;
+    private String lastUpdateDesc;
 
     @TableField("last_update_at")
-    private Timestamp last_update_at;
+    private Timestamp lastUpdateAt;
 
     public Parcel(CreateParcelData data, String desc) {
         this.id = UUID.randomUUID().toString();
@@ -42,6 +42,6 @@ public class Parcel {
         this.address1 = data.getAddress1();
         this.address2 = data.getAddress2();
         this.student = data.getStudent();
-        this.last_update_desc = desc;
+        this.lastUpdateDesc = desc;
     }
 }
