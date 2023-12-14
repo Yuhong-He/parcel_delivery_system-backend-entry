@@ -44,20 +44,23 @@ public class AuthenticationFilter implements Filter {
         String requestURI = request.getRequestURI();
 
         String[] unregisteredRights = PermissionHelper.unregistered();
+        String[] anyRegisteredRights = PermissionHelper.anyRegistered();
         String[] studentRights = PermissionHelper.student();
         String[] postmanRights = PermissionHelper.postman();
         String[] mervilleStaffRights = PermissionHelper.mervilleStaff();
         String[] estateServiceStaffRights = PermissionHelper.estateServiceStaff();
 
         // 2. If the request is for unregistered user
-        if(match(unregisteredRights, requestURI)){
+        if(match(unregisteredRights, requestURI)) {
             filterChain.doFilter(request, response);
             return;
         }
 
         // 3. Check the request belonging to which user rights group
         String rights = "";
-        if(match(studentRights, requestURI)) {
+        if(match(anyRegisteredRights, requestURI)) {
+            rights = "any user";
+        } else if(match(studentRights, requestURI)) {
             rights = "Student";
         } else if(match(postmanRights, requestURI)) {
             rights = "Postman";
@@ -91,6 +94,10 @@ public class AuthenticationFilter implements Filter {
 
                             // f. check user rights
                             switch (rights) {
+                                case "any user":
+                                    BaseContext.setCurrentId(userId);
+                                    filterChain.doFilter(request, response);
+                                    break;
                                 case "Student":
                                     if (user.getType() == UserTypeEnum.Student.getType()) {
                                         BaseContext.setCurrentId(userId);

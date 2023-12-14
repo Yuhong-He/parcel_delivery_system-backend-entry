@@ -10,6 +10,12 @@ public class PermissionHelper {
         };
     }
 
+    public static String[] anyRegistered() {
+        return new String[]{
+                "/parcel/list"
+        };
+    }
+
     public static String[] student() {
         return new String[]{
 

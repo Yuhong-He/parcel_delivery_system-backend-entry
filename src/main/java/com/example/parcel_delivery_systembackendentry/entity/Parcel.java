@@ -8,6 +8,7 @@ import com.example.parcel_delivery_systembackendentry.dto.CreateParcelData;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.sql.Timestamp;
 import java.util.UUID;
 
 @Data
@@ -29,11 +30,18 @@ public class Parcel {
     @TableField("student")
     private int student;
 
-    public Parcel(CreateParcelData data) {
+    @TableField("last_update_desc")
+    private String last_update_desc;
+
+    @TableField("last_update_at")
+    private Timestamp last_update_at;
+
+    public Parcel(CreateParcelData data, String desc) {
         this.id = UUID.randomUUID().toString();
         this.type = data.getType();
         this.address1 = data.getAddress1();
         this.address2 = data.getAddress2();
         this.student = data.getStudent();
+        this.last_update_desc = desc;
     }
 }
