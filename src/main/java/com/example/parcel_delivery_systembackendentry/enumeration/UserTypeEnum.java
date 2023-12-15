@@ -9,9 +9,9 @@ public enum UserTypeEnum {
     MervilleStaff(3),
     EstateServiceStaff(4);
 
-    private final Integer type;
+    private final Integer val;
 
-    UserTypeEnum(Integer type) {
-        this.type = type;
+    UserTypeEnum(Integer val) {
+        this.val = val;
     }
 }

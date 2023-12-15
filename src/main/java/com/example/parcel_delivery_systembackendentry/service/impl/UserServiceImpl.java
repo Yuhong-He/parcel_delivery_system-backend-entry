@@ -51,7 +51,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     public List<User> getStudentsBySearchName(String name) {
         QueryWrapper<User> queryWrapper = new QueryWrapper<>();
         queryWrapper.like("username", name);
-        queryWrapper.eq("type", UserTypeEnum.Student.getType());
+        queryWrapper.eq("type", UserTypeEnum.Student.getVal());
         return baseMapper.selectList(queryWrapper);
     }
 
@@ -59,7 +59,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     public User getStudentById(int id) {
         QueryWrapper<User> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("id", id);
-        queryWrapper.eq("type", UserTypeEnum.Student.getType());
+        queryWrapper.eq("type", UserTypeEnum.Student.getVal());
         return baseMapper.selectOne(queryWrapper);
     }
 }

@@ -1,7 +1,5 @@
 package com.example.parcel_delivery_systembackendentry.controller;
 
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.example.parcel_delivery_systembackendentry.common.BaseContext;
@@ -64,7 +62,7 @@ public class ParcelController {
     @GetMapping("/list")
     public Result<Object> getParcelList(@RequestParam("page") Integer pageNo) {
         User currentUser = userService.getUserById(Math.toIntExact(BaseContext.getCurrentId()));
-        if (currentUser.getType() == UserTypeEnum.EstateServiceStaff.getType()) {
+        if (currentUser.getType() == UserTypeEnum.EstateServiceStaff.getVal()) {
             Page<Parcel> page = new Page<>(pageNo, 10);
             IPage<Parcel> pageRs =  parcelService.getCategoryByNameLike(page);
             List<Parcel> list = pageRs.getRecords();

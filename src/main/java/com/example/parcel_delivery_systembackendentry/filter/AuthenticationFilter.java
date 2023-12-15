@@ -99,7 +99,7 @@ public class AuthenticationFilter implements Filter {
                                     filterChain.doFilter(request, response);
                                     break;
                                 case "Student":
-                                    if (user.getType() == UserTypeEnum.Student.getType()) {
+                                    if (user.getType() == UserTypeEnum.Student.getVal()) {
                                         BaseContext.setCurrentId(userId);
                                         filterChain.doFilter(request, response);
                                     } else {
@@ -107,7 +107,7 @@ public class AuthenticationFilter implements Filter {
                                     }
                                     break;
                                 case "Postman":
-                                    if (user.getType() == UserTypeEnum.Postman.getType()) {
+                                    if (user.getType() == UserTypeEnum.Postman.getVal()) {
                                         BaseContext.setCurrentId(userId);
                                         filterChain.doFilter(request, response);
                                     } else {
@@ -115,7 +115,7 @@ public class AuthenticationFilter implements Filter {
                                     }
                                     break;
                                 case "Merville Staff":
-                                    if (user.getType() == UserTypeEnum.MervilleStaff.getType()) {
+                                    if (user.getType() == UserTypeEnum.MervilleStaff.getVal()) {
                                         BaseContext.setCurrentId(userId);
                                         filterChain.doFilter(request, response);
                                     } else {
@@ -123,7 +123,7 @@ public class AuthenticationFilter implements Filter {
                                     }
                                     break;
                                 case "Estate Service Staff":
-                                    if (user.getType() == UserTypeEnum.EstateServiceStaff.getType()) {
+                                    if (user.getType() == UserTypeEnum.EstateServiceStaff.getVal()) {
                                         BaseContext.setCurrentId(userId);
                                         filterChain.doFilter(request, response);
                                     } else {
