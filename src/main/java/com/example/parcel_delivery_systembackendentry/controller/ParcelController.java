@@ -47,8 +47,7 @@ public class ParcelController {
                 parcelService.save(parcel);
 
                 ParcelTrack parcelTrack = new ParcelTrack(
-                        parcel.getId(), desc, Math.toIntExact(BaseContext.getCurrentId())
-                );
+                        parcel.getId(), desc, Math.toIntExact(BaseContext.getCurrentId()));
                 parcelTrackService.save(parcelTrack);
                 return Result.ok();
             } else {
@@ -64,10 +63,10 @@ public class ParcelController {
         User currentUser = userService.getUserById(Math.toIntExact(BaseContext.getCurrentId()));
         if (currentUser.getType() == UserTypeEnum.EstateServiceStaff.getVal()) {
             Page<Parcel> page = new Page<>(pageNo, 10);
-            IPage<Parcel> pageRs =  parcelService.getCategoryByNameLike(page);
+            IPage<Parcel> pageRs = parcelService.getCategoryByNameLike(page);
             List<Parcel> list = pageRs.getRecords();
             List<ParcelWithStudentInfo> newList = new ArrayList<>();
-            for(Parcel p : list) {
+            for (Parcel p : list) {
                 User student = userService.getStudentById(p.getStudent());
                 ParcelWithStudentInfo parcelWithStudentInfo = new ParcelWithStudentInfo(
                         p.getId(), new StudentInfo(student.getUsername(), student.getEmail()),
