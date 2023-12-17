@@ -1,13 +1,20 @@
 package com.example.parcel_delivery_systembackendentry.common;
 
 import com.example.parcel_delivery_systembackendentry.enumeration.ResultCodeEnum;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 @Data
+@Schema(description = "Common Response for Frontend")
 public class Result<T> {
 
+    @Schema(description = "Respond Code", example = "200")
     private Integer code;
+
+    @Schema(description = "Respond Message", example = "OK")
     private String message;
+
+    @Schema(description = "Respond Data Body", example = "{}")
     private T data;
 
     public Result(){}

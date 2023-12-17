@@ -17,6 +17,12 @@ import com.example.parcel_delivery_systembackendentry.service.ParcelService;
 import com.example.parcel_delivery_systembackendentry.service.ParcelTrackService;
 import com.example.parcel_delivery_systembackendentry.service.UserService;
 import com.example.parcel_delivery_systembackendentry.utils.ParcelUtils;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -25,6 +31,7 @@ import java.util.List;
 
 @CrossOrigin
 @RestController
+@Tag(name = "Parcel", description = "Parcel data controller")
 @RequestMapping("/parcel")
 public class ParcelController {
 
@@ -37,6 +44,7 @@ public class ParcelController {
     @Autowired
     private UserService userService;
 
+    @Operation(summary = "Create a parcel", description = "Allowed Estate Service Staff create a parcel.")
     @PostMapping("/create")
     public Result<Object> create(@RequestBody CreateParcelData data) {
         if (ParcelUtils.validateParcelCreate(data)) {
@@ -59,8 +67,12 @@ public class ParcelController {
         }
     }
 
+    @ApiResponse(responseCode = "200", description = "Success",
+            content = {@Content(mediaType = "application/json",
+                    schema = @Schema(implementation = CustomPage.class))})
+    @Operation(summary = "List parcels", description = "Allowed all type of users list the appropriate parcels based on the user rights.")
     @GetMapping("/list")
-    public Result<Object> getParcelList(@RequestParam("page") Integer pageNo) {
+    public Result<Object> getParcelList(@Parameter(description = "Page Number") @RequestParam("page") Integer pageNo) {
         User currentUser = userService.getUserById(Math.toIntExact(BaseContext.getCurrentId()));
         if (currentUser.getType() == UserTypeEnum.EstateServiceStaff.getVal()) {
             Page<Parcel> page = new Page<>(pageNo, 10);
@@ -78,7 +90,6 @@ public class ParcelController {
                     pageRs.getCurrent(), pageRs.getPages());
             return Result.ok(customPage);
         } else {
-            System.out.println("aaa");
             return Result.error(ResultCodeEnum.NO_PERMISSION);
         }
     }

@@ -6,7 +6,9 @@ public class PermissionHelper {
         return new String[]{
                 "/user/login",
                 "/user/sendRegisterEmail",
-                "/user/register"
+                "/user/register",
+                "/api-docs",
+                "/swagger-ui/*"
         };
     }
 
