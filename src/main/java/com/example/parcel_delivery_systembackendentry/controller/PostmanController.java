@@ -15,7 +15,7 @@ public class PostmanController {
     public int newLetter(@RequestBody Parcel data) {
         try {
             MQ.sendLog(null);
-            MQ.notifyReceiver(null);
+            MQ.notifyReceiver(null,0);
         } catch (Exception e) {
             //handle exception here
         }

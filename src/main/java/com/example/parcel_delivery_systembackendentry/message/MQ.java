@@ -1,42 +1,67 @@
 package com.example.parcel_delivery_systembackendentry.message;
 
 import com.alibaba.fastjson2.JSON;
-import com.example.parcel_delivery_systembackendentry.entity.Parcel;
 import com.example.parcel_delivery_systembackendentry.entity.ParcelTrack;
 import com.rabbitmq.client.*;
-import lombok.Value;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 
+@Component
 public class MQ {
-    @Value("${global.MQServer}")
-    public static final String address;
 
-    public static final Channel establishConnection() throws Exception {
-        System.out.println("Connecting to rabbitMQServer...");
+    private static String address = "localhost";
+    private static Boolean durable = false;
+    private static Boolean autoAck = true;
+
+    @Autowired
+    private void setStaticFields(
+            @Value("${MQ.address}") String s,
+            @Value("#{new Boolean('${MQ.durable}')}") Boolean b1,
+            @Value("#{new Boolean('${MQ.autoAck}')}") Boolean b2){
+        this.address=s;
+        this.durable=b1;
+        this.autoAck=b2;
+    }
+
+    public static Channel establishConnection() throws Exception {
+        System.out.println("Connecting to rabbitMQServer:"+address+" ...");
         ConnectionFactory factory = new ConnectionFactory();
-        factory.setHost(address);
+        factory.setUri(address);
+        factory.useSslProtocol();
         Connection connection = factory.newConnection();
         Channel channel = connection.createChannel();
-        channel.queueDeclare("Log", false, false, false, null);
+        channel.queueDeclare("Log", durable, false, false, null);
         return channel;
     }
 
-    public static final void sendLog(ParcelTrack parcelTrack) throws Exception {
+    public static void sendLog(ParcelTrack parcelTrack) throws Exception {
         String message = JSON.toJSONString(parcelTrack);
-        establishConnection().basicPublish("", "Log", null, message.getBytes());
-        System.out.println("Sending " + message + " to rabbitMQServer...");
+        establishConnection().basicPublish("", "Log", MessageProperties.PERSISTENT_TEXT_PLAIN, message.getBytes());
+        System.out.println("Sending Log: " + message + " to Log System...");
     }
 
-    public static final void notifyReceiver(Object message1) throws Exception {
+    public static void notifyReceiver(Object message1,int receiverID) throws Exception {
         String message = JSON.toJSONString(message1);
         Channel channel = establishConnection();
         channel.exchangeDeclare("ReceiverExchange", "direct");
-        channel.basicPublish("ReceriberExchange", "",null,message.getBytes());
+        channel.basicPublish("ReceiverExchange", String.valueOf(receiverID), MessageProperties.PERSISTENT_TEXT_PLAIN, message.getBytes());
+        System.out.println("Sending notification: " + message + " to Receiver " + " ...");
     }
 
-    public static final void consumeNotification(int receiverId, DeliverCallback callBack) throws Exception {
+    public static void consumeNotification(int receiverId, DeliverCallback callBack) throws Exception {
         Channel channel = establishConnection();
         channel.exchangeDeclare("ReceiverExchange", "direct");
-        channel.queueDeclare(String.valueOf(receiverId), false, false, false, null);
-        channel.basicConsume("ReceiverExchange",true, callBack,consumerTag->{});
+        channel.queueDeclare(String.valueOf(receiverId), durable,true, false, null);
+        channel.queueBind(String.valueOf(receiverId),"ReceiverExchange",String.valueOf(receiverId));
+        System.out.println("Binding "+receiverId+" to Receiver exchange...");
+        channel.basicConsume("ReceiverExchange", autoAck, callBack, consumerTag -> {
+        });
+    }
+
+    public static void consumeLog(DeliverCallback callBack) throws Exception {
+        Channel channel = establishConnection();
+        channel.basicConsume("Log", autoAck, callBack, consumerTag -> {
+        });
     }
 }
