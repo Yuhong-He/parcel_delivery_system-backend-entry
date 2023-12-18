@@ -13,9 +13,9 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(value = Exception.class)
     @ResponseBody
-    public Result<Object> exceptionHandler(Exception e){
+    public Result<Object> exceptionHandler(Exception e) {
         log.error("Unexpected error: " + e.getMessage());
-        for(StackTraceElement s : e.getStackTrace()) {
+        for (StackTraceElement s : e.getStackTrace()) {
             log.error("\t" + s);
         }
         return Result.error(e.getMessage(), ResultCodeEnum.FAIL);

@@ -42,7 +42,7 @@ public class JwtHelper {
 
     public static Long getUserId(String token) {
         try {
-            if(token.isEmpty()) return null;
+            if (token.isEmpty()) return null;
             Jws<Claims> claimsJws = Jwts.parserBuilder().setSigningKey(getKey()).build().parseClaimsJws(token);
             Claims claims = claimsJws.getBody();
             Double userIdDouble = (Double) claims.get("userId");
@@ -57,7 +57,7 @@ public class JwtHelper {
         try {
             return !Jwts.parserBuilder().setSigningKey(getKey()).build().parseClaimsJws(token)
                     .getBody().getExpiration().before(new Date());
-        } catch(Exception e) {
+        } catch (Exception e) {
             log.error("Jwt error: " + e.getMessage());
             return false;
         }

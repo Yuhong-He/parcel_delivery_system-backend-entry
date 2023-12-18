@@ -10,7 +10,8 @@ public class Result<T> {
     private String message;
     private T data;
 
-    public Result(){}
+    public Result() {
+    }
 
     private static <T> Result<T> build(T data) {
         Result<T> result = new Result<>();
@@ -33,19 +34,19 @@ public class Result<T> {
         return result;
     }
 
-    public static<T> Result<T> ok(T data){
+    public static <T> Result<T> ok(T data) {
         return build(data, ResultCodeEnum.SUCCESS);
     }
 
-    public static<T> Result<T> ok(){
+    public static <T> Result<T> ok() {
         return build(ResultCodeEnum.SUCCESS);
     }
 
-    public static<T> Result<T> error(T data, ResultCodeEnum resultCodeEnum){
+    public static <T> Result<T> error(T data, ResultCodeEnum resultCodeEnum) {
         return build(data, resultCodeEnum);
     }
 
-    public static<T> Result<T> error(ResultCodeEnum resultCodeEnum){
+    public static <T> Result<T> error(ResultCodeEnum resultCodeEnum) {
         return build(resultCodeEnum);
     }
 }

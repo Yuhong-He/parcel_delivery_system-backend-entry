@@ -25,7 +25,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     public User login(String email, String password, int type) {
         BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
         User user = this.getUserByEmail(email, type);
-        if(user != null && passwordEncoder.matches(password, user.getPassword())) {
+        if (user != null && passwordEncoder.matches(password, user.getPassword())) {
             return this.getUserByEmail(email, type);
         } else {
             return null;

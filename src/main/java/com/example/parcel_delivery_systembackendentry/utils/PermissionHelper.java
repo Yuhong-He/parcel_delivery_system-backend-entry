@@ -36,8 +36,8 @@ public class PermissionHelper {
 
     public static String[] estateServiceStaff() {
         return new String[]{
-            "/user/searchStudentByName",
-            "/parcel/create"
+                "/user/searchStudentByName",
+                "/parcel/create"
         };
     }
 

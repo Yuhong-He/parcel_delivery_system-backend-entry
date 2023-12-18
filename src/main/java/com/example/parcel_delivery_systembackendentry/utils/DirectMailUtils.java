@@ -18,7 +18,7 @@ public class DirectMailUtils {
     public static void sendEmail(String email, String subject, String emailBody) {
         try {
             DefaultProfile profile = DefaultProfile.getProfile("ap-southeast-1", getAccessKey("id"), getAccessKey("secret"));
-            DefaultProfile.addEndpoint("ap-southeast-1", "Dm",  "dm.ap-southeast-1.aliyuncs.com");
+            DefaultProfile.addEndpoint("ap-southeast-1", "Dm", "dm.ap-southeast-1.aliyuncs.com");
             IAcsClient client = new DefaultAcsClient(profile);
 
             SingleSendMailRequest request = new SingleSendMailRequest();
@@ -43,7 +43,7 @@ public class DirectMailUtils {
                 Objects.requireNonNull(DirectMailUtils.class.getClassLoader().getResourceAsStream("securityKey.properties")),
                 StandardCharsets.UTF_8);
         props.load(inputStreamReader);
-        if(s.equals("id")) {
+        if (s.equals("id")) {
             return props.getProperty("aliyun.directMail.accessKeyId");
         } else {
             return props.getProperty("aliyun.directMail.secret");

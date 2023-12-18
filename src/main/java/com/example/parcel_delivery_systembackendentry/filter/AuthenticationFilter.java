@@ -3,8 +3,8 @@ package com.example.parcel_delivery_systembackendentry.filter;
 import com.alibaba.fastjson2.JSON;
 import com.example.parcel_delivery_systembackendentry.common.BaseContext;
 import com.example.parcel_delivery_systembackendentry.common.Result;
-import com.example.parcel_delivery_systembackendentry.enumeration.ResultCodeEnum;
 import com.example.parcel_delivery_systembackendentry.entity.User;
+import com.example.parcel_delivery_systembackendentry.enumeration.ResultCodeEnum;
 import com.example.parcel_delivery_systembackendentry.enumeration.UserTypeEnum;
 import com.example.parcel_delivery_systembackendentry.service.UserService;
 import com.example.parcel_delivery_systembackendentry.utils.JwtHelper;
@@ -28,10 +28,9 @@ import java.nio.charset.StandardCharsets;
 @Order(Ordered.HIGHEST_PRECEDENCE)
 public class AuthenticationFilter implements Filter {
 
+    public static final AntPathMatcher PATH_MATCHER = new AntPathMatcher();
     @Autowired
     private UserService userService;
-
-    public static final AntPathMatcher PATH_MATCHER = new AntPathMatcher();
 
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain)
@@ -51,22 +50,22 @@ public class AuthenticationFilter implements Filter {
         String[] estateServiceStaffRights = PermissionHelper.estateServiceStaff();
 
         // 2. If the request is for unregistered user
-        if(match(unregisteredRights, requestURI)) {
+        if (match(unregisteredRights, requestURI)) {
             filterChain.doFilter(request, response);
             return;
         }
 
         // 3. Check the request belonging to which user rights group
         String rights = "";
-        if(match(anyRegisteredRights, requestURI)) {
+        if (match(anyRegisteredRights, requestURI)) {
             rights = "any user";
-        } else if(match(studentRights, requestURI)) {
+        } else if (match(studentRights, requestURI)) {
             rights = "Student";
-        } else if(match(postmanRights, requestURI)) {
+        } else if (match(postmanRights, requestURI)) {
             rights = "Postman";
-        } else if(match(mervilleStaffRights, requestURI)) {
+        } else if (match(mervilleStaffRights, requestURI)) {
             rights = "Merville Staff";
-        } else if(match(estateServiceStaffRights, requestURI)) {
+        } else if (match(estateServiceStaffRights, requestURI)) {
             rights = "Estate Service Staff";
         }
 
@@ -76,21 +75,21 @@ public class AuthenticationFilter implements Filter {
             String access_token = request.getHeader("AccessToken");
 
             // a. check access_token exist
-            if(access_token != null && !access_token.isEmpty()) {
+            if (access_token != null && !access_token.isEmpty()) {
 
                 // b. check access_token expired
-                if(JwtHelper.notExpired(access_token)) {
+                if (JwtHelper.notExpired(access_token)) {
 
                     // c. check access_token valid
                     Long userId = JwtHelper.getUserId(access_token);
 
                     // d. check userId exist (valid access_token should contain a valid userid)
-                    if(userId != null) {
+                    if (userId != null) {
                         Integer userIdInt = Math.toIntExact(userId);
                         User user = userService.getUserById(userIdInt);
 
                         // e. check user exist
-                        if(user != null) {
+                        if (user != null) {
 
                             // f. check user rights
                             switch (rights) {
@@ -151,7 +150,7 @@ public class AuthenticationFilter implements Filter {
 
     public boolean match(String[] urls, String requestURI) {
         for (String url : urls) {
-            if(PATH_MATCHER.match(url, requestURI)){
+            if (PATH_MATCHER.match(url, requestURI)) {
                 return true;
             }
         }

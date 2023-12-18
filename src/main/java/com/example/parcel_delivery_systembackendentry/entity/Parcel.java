@@ -15,7 +15,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @TableName("parcel")
 public class Parcel {
-    @TableId(value="id", type= IdType.ASSIGN_UUID)
+    @TableId(value = "id", type = IdType.ASSIGN_UUID)
     private String id;
 
     @TableField("type")

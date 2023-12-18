@@ -12,9 +12,13 @@ public interface UserService extends IService<User> {
 
     // Read
     User login(String email, String password, int type);
+
     User getUserById(Integer id);
+
     User getUserByEmail(String email, int type);
+
     List<User> getStudentsBySearchName(String name);
+
     User getStudentById(int id);
 
 }

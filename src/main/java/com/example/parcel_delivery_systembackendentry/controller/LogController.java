@@ -4,11 +4,11 @@ import com.example.parcel_delivery_systembackendentry.common.Result;
 import com.example.parcel_delivery_systembackendentry.entity.ParcelTrack;
 import com.example.parcel_delivery_systembackendentry.service.ParcelTrackService;
 import jakarta.annotation.Resource;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 /*provide basic functions here
-* more functions to add along with development*/
+ * more functions to add along with development
+ * Every function needs to post a message to /log/newTrail*/
 @RestController
 @RequestMapping("/Log")
 public class LogController {
@@ -21,7 +21,7 @@ public class LogController {
     }
 
     @GetMapping(value = "/getReceiverTrail")
-    public Result<Object> newTrail(@RequestParam int userId){
+    public Result<Object> newTrail(@RequestParam int userId) {
         return null;
     }
 

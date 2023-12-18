@@ -1,12 +1,12 @@
 package com.example.parcel_delivery_systembackendentry.controller;
 
 import com.example.parcel_delivery_systembackendentry.common.Result;
-import com.example.parcel_delivery_systembackendentry.enumeration.ResultCodeEnum;
 import com.example.parcel_delivery_systembackendentry.dto.LoginData;
 import com.example.parcel_delivery_systembackendentry.dto.RegisterData;
 import com.example.parcel_delivery_systembackendentry.entity.EmailTimer;
 import com.example.parcel_delivery_systembackendentry.entity.EmailVerification;
 import com.example.parcel_delivery_systembackendentry.entity.User;
+import com.example.parcel_delivery_systembackendentry.enumeration.ResultCodeEnum;
 import com.example.parcel_delivery_systembackendentry.service.EmailTimerService;
 import com.example.parcel_delivery_systembackendentry.service.EmailVerificationService;
 import com.example.parcel_delivery_systembackendentry.service.UserService;
@@ -36,14 +36,14 @@ public class UserController {
                                             @RequestParam("type") int type) {
 
         // 1. check email format
-        if(UserUtils.validateEmail(email)) {
+        if (UserUtils.validateEmail(email)) {
 
             // 2. check email registered
             if (userService.getUserByEmail(email, type) == null) {
 
                 // 3. check that no emails have been sent within a minute
                 EmailTimer oldEmailTimer = emailTimerService.read(email, "verificationCode");
-                if(oldEmailTimer == null || !EmailTimerUtils.repeatEmail(oldEmailTimer)) {
+                if (oldEmailTimer == null || !EmailTimerUtils.repeatEmail(oldEmailTimer)) {
 
                     // a. generate verification code
                     EmailVerification emailVerification = EmailVerificationUtils.createVerification(email);
@@ -97,7 +97,7 @@ public class UserController {
                     if (userService.getUserByEmail(email, type) == null) {
 
                         // 5. check email verification code send before
-                        if(ev != null) {
+                        if (ev != null) {
 
                             // 6. check verification code expiration
                             if (!EmailVerificationUtils.isExpiration(ev)) {
@@ -139,11 +139,11 @@ public class UserController {
 
         // 1. Check user exist
         User u = userService.getUserByEmail(email, type);
-        if(u != null) {
+        if (u != null) {
 
             // 2. check password
             User user = userService.login(email, password, type);
-            if(user != null) {
+            if (user != null) {
 
                 Map<String, Object> map = new LinkedHashMap<>();
                 map.put("access_token", JwtHelper.createAccessToken(user.getId().longValue()));
@@ -163,7 +163,7 @@ public class UserController {
 
     @GetMapping("/searchStudentByName")
     public Result<Object> searchStudentByName(@RequestParam("searchTxt") String searchTxt) {
-        if(!searchTxt.isEmpty()) {
+        if (!searchTxt.isEmpty()) {
             return Result.ok(userService.getStudentsBySearchName(searchTxt));
         } else {
             return Result.error(ResultCodeEnum.EMPTY_SEARCH);

@@ -13,7 +13,7 @@ import java.sql.Timestamp;
 @NoArgsConstructor
 @TableName("parcel_track")
 public class ParcelTrack {
-    @TableId(value="id", type= IdType.AUTO)
+    @TableId(value = "id", type = IdType.AUTO)
     private Integer id;
 
     @TableField("parcel_id")

@@ -15,7 +15,7 @@ public class EmailContentHelper {
     }
 
     private static String signature() {
-        return  "<hr>" +
+        return "<hr>" +
                 "<p>UCD Parcel Delivery System</p>";
     }
 
