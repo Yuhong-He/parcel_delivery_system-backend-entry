@@ -29,7 +29,6 @@ import org.springframework.web.bind.annotation.*;
 import java.util.ArrayList;
 import java.util.List;
 
-@CrossOrigin
 @RestController
 @Tag(name = "Parcel", description = "Parcel data controller")
 @RequestMapping("/parcel")

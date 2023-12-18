@@ -25,7 +25,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-@CrossOrigin
 @RestController
 @Tag(name = "User", description = "User data controller")
 @RequestMapping("/user")
