@@ -21,8 +21,14 @@ class ParcelDeliverySystemBackendEntryApplicationTests {
         };
 
         try {
+            ParcelTrack parcelTrack1 = new ParcelTrack("123", "Test Log", 1);
+            ParcelTrack parcelTrack2 = new ParcelTrack("456", "Test Log", 1);
             MQ.consumeLog(callback);
-            MQ.sendLog(new ParcelTrack("123", "Test Log", 1));
+            MQ.sendLog(parcelTrack1);
+            MQ.consumeNotification(1, callback);
+            MQ.consumeNotification(2, callback);
+            MQ.notifyReceiver(parcelTrack1, 1);
+            MQ.notifyReceiver(parcelTrack2, 2);
         } catch (Exception e) {
             System.out.println("Exception:" + e);
         }

@@ -19,15 +19,16 @@ public class MQ {
             @Value("${MQ.address}") String s,
             @Value("#{new Boolean('${MQ.durable}')}") Boolean b1,
             @Value("#{new Boolean('${MQ.autoAck}')}") Boolean b2){
-        this.address=s;
-        this.durable=b1;
-        this.autoAck=b2;
+        address = s;
+        durable = b1;
+        autoAck = b2;
     }
 
     public static Channel establishConnection() throws Exception {
         System.out.println("Connecting to rabbitMQServer:"+address+" ...");
         ConnectionFactory factory = new ConnectionFactory();
-        factory.setUri(address);
+        factory.setHost(address);
+        factory.setPort(5671);
         factory.useSslProtocol();
         Connection connection = factory.newConnection();
         Channel channel = connection.createChannel();
@@ -41,8 +42,8 @@ public class MQ {
         System.out.println("Sending Log: " + message + " to Log System...");
     }
 
-    public static void notifyReceiver(Object message1,int receiverID) throws Exception {
-        String message = JSON.toJSONString(message1);
+    public static void notifyReceiver(ParcelTrack parcelTrack, int receiverID) throws Exception {
+        String message = JSON.toJSONString(parcelTrack);
         Channel channel = establishConnection();
         channel.exchangeDeclare("ReceiverExchange", "direct");
         channel.basicPublish("ReceiverExchange", String.valueOf(receiverID), MessageProperties.PERSISTENT_TEXT_PLAIN, message.getBytes());
