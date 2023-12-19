@@ -54,7 +54,7 @@ public class MQ {
         channel.queueDeclare(String.valueOf(receiverId), durable,true, false, null);
         channel.queueBind(String.valueOf(receiverId),"ReceiverExchange",String.valueOf(receiverId));
         System.out.println("Binding "+receiverId+" to Receiver exchange...");
-        channel.basicConsume("ReceiverExchange", autoAck, callBack, consumerTag -> {
+        channel.basicConsume(String.valueOf(receiverId), autoAck, callBack, consumerTag -> {
         });
 
     }
