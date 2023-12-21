@@ -1,13 +1,12 @@
 package org.example.receiver.controller;
 
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
-import com.beust.jcommander.internal.Lists;
-import com.example.estate.dto.CustomPage;
-import com.example.estate.dto.ParcelWithLatestTrack;
-import com.example.estate.dto.ParcelWithStudentInfo;
-import com.example.estate.dto.StudentInfo;
-import com.example.estate.entity.User;
-import com.example.estate.service.UserService;
+import org.example.receiver.dto.ParcelWithStudentInfo;
+import org.example.receiver.dto.StudentInfo;
+import org.example.receiver.entity.User;
+import org.example.receiver.service.UserService;
+import org.example.receiver.dto.CustomPage;
+import org.example.receiver.dto.ParcelWithLatestTrack;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import org.bson.types.ObjectId;
@@ -15,8 +14,6 @@ import org.example.receiver.entity.Parcel;
 import org.example.receiver.entity.ParcelTrack;
 import org.example.receiver.repository.ParcelRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.annotation.Order;
-import org.springframework.data.domain.Example;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
@@ -28,20 +25,19 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
-
-import static com.mongodb.client.model.Aggregates.unwind;
 import static org.springframework.data.mongodb.core.aggregation.Aggregation.*;
 
 @RestController
-@RequestMapping("/TransportationBroker")
+@RequestMapping("/Receiver")
 public class ReceiverController {
     private final ParcelRepository parcelRepository;
+
+    @Autowired
+    private UserService userService;
 
     @Autowired
     private MongoTemplate mongoTemplate;
@@ -70,10 +66,12 @@ public class ReceiverController {
         return parcel.getTracks();
     }
 
-    @RequestMapping("/AAA")
+    @RequestMapping(value = "/AAA")
     public String AAA() {
         return "hellow";
     }
+
+
     @ApiResponse(responseCode = "200", description = "Success")
     @Operation(summary = "get a parcelList", description = "Allowed User gets their parcels")
     @GetMapping("/getParcelList")
@@ -120,14 +118,28 @@ public class ReceiverController {
     @ApiResponse(responseCode = "200", description = "Success")
     @Operation(summary = "get notifications", description = "Allowed User gets notifications")
     @GetMapping("/getNotification")
-    public List<Parcel> getNotification(@RequestParam int receiverID) {
+    public CustomPage getNotification(@RequestParam int receiverID, Integer pageNo) {
         AggregationOperation matchid = Aggregation.match(Criteria.where("parcel.student").is(receiverID));
         AggregationOperation matchdes = Aggregation.match(Criteria.where("tracks.description").is("to be confirmed"));
         Aggregation aggregation = newAggregation(matchid, unwind, sort, matchdes,group, secondSort);
         AggregationResults<ParcelWithLatestTrack> results = mongoTemplate.aggregate(aggregation, "parcel", ParcelWithLatestTrack.class);
         List<ParcelWithLatestTrack> parcels = results.getMappedResults();
-
-        return null;
+        int total = parcels.size();
+        int pageSize = 10;
+        int fromIndex = Math.min((pageNo - 1) * pageSize, total);
+        int toIndex = Math.min(fromIndex + pageSize, total);
+        List<org.example.receiver.dto.ParcelWithLatestTrack> list = parcels.subList(fromIndex, toIndex);
+        List<ParcelWithStudentInfo> newList = new ArrayList<>();
+        for(org.example.receiver.dto.ParcelWithLatestTrack p : list) {
+            User student = userService.getStudentById(p.getStudent());
+            com.example.estate.entity.ParcelTrack latestTrack = p.getLatestTrack();
+            ParcelWithStudentInfo parcelWithStudentInfo = new ParcelWithStudentInfo(
+                    p.getId(), new StudentInfo(student.getUsername(), student.getEmail()),
+                    p.getType(), p.getAddress1(), p.getAddress2(), latestTrack.getDescription(), latestTrack.getCreate_at());
+            newList.add(parcelWithStudentInfo);
+        }
+        long pages = (long) Math.ceil((double) total / pageSize);
+        return new CustomPage(list, total, pageSize, pageNo, pages);
     }
     @ApiResponse(responseCode = "200", description = "Success")
     @Operation(summary = "get a parcelList", description = "Allowed User gets their parcels")
