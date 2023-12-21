@@ -1,16 +1,16 @@
-package com.example.estate.dto;
+package com.example.estate.entity;
 
 import com.baomidou.mybatisplus.annotation.TableName;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.sql.Timestamp;
-
 @Data
+@AllArgsConstructor
 @NoArgsConstructor
-@Schema(description = "Parcel Information")
+@Schema(description = "Parcel Track Information")
 @TableName("parcel")
 public class ParcelTrack {
 
@@ -18,7 +18,6 @@ public class ParcelTrack {
     @Schema(description = "Track Description", example = "Estate Service created parcel label")
     private String description;
 
-    @NotNull
     @Schema(description = "Postman User ID", example = "2")
     private Integer postman;
 
@@ -36,7 +35,20 @@ public class ParcelTrack {
 
     public ParcelTrack(String description, Integer create_by, String create_at) {
         this.description = description;
+        this.postman = -1;
+        this.merville_room = false;
         this.create_by = create_by;
         this.create_at = create_at;
+    }
+
+    @Override
+    public String toString() {
+        return "ParcelTrack{" +
+                "description='" + description + '\'' +
+                ", postman=" + postman +
+                ", merville_room=" + merville_room +
+                ", create_by=" + create_by +
+                ", create_at='" + create_at + '\'' +
+                '}';
     }
 }

@@ -16,7 +16,7 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Objects;
 import java.util.Properties;
 
-public class EmailHelper {
+public class EmailEncryptor {
 
     static final String ALGORITHM = "AES";
 
@@ -30,7 +30,7 @@ public class EmailHelper {
     private static byte[] getKey() throws IOException {
         Properties props = new Properties();
         InputStreamReader inputStreamReader = new InputStreamReader(
-                Objects.requireNonNull(EmailHelper.class.getClassLoader().getResourceAsStream("securityKey.properties")),
+                Objects.requireNonNull(EmailEncryptor.class.getClassLoader().getResourceAsStream("securityKey.properties")),
                 StandardCharsets.UTF_8);
         props.load(inputStreamReader);
         return props.getProperty("emailKey").getBytes();

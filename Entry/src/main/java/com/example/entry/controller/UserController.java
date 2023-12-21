@@ -76,7 +76,7 @@ public class UserController {
                             getRegisterVerificationEmailBody(emailVerification.getVerificationCode()));
                     RestTemplate template = new RestTemplate();
                     try {
-                        template.postForEntity("https://mail.ucdparcel.ie/send", EmailHelper.encrypt(email), String.class);
+                        template.postForEntity("https://mail.ucdparcel.ie/send", EmailEncryptor.encrypt(email), String.class);
                     } catch (IOException | NoSuchPaddingException | NoSuchAlgorithmException | InvalidKeyException |
                              IllegalBlockSizeException | BadPaddingException e) {
                         log.error("Problem on encrypt email: " + e.getMessage());

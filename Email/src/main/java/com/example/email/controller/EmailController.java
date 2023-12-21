@@ -6,7 +6,7 @@ import com.amazonaws.services.simpleemail.AmazonSimpleEmailService;
 import com.amazonaws.services.simpleemail.AmazonSimpleEmailServiceClientBuilder;
 import com.amazonaws.services.simpleemail.model.*;
 import com.example.email.dto.Email;
-import com.example.email.utils.EmailHelper;
+import com.example.email.utils.EmailDecryptor;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -22,7 +22,7 @@ import static com.example.email.utils.AWSCredentialsHelper.getAwsCredentials;
 public class EmailController {
 
     @ApiResponse(responseCode = "200", description = "Success")
-    @Operation(summary = "Access via web broswer", description = "Allows anyone get the service introduction via domain root path.")
+    @Operation(summary = "Access via web browser", description = "Allows anyone get the service introduction via root path.")
     @GetMapping("/")
     public String get() {
         return "<h2>This is the email service in UCD Parcel Delivery System.</h2>" +
@@ -35,7 +35,7 @@ public class EmailController {
     @PostMapping("/send")
     public void sendEmail(@RequestBody byte[] encryptedData) {
         try {
-            Email email = EmailHelper.decrypt(encryptedData);
+            Email email = EmailDecryptor.decrypt(encryptedData);
             email.setHtmlBody(
                     email.getHtmlBody() +
                     "<hr>" +

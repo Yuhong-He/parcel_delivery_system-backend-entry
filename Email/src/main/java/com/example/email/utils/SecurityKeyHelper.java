@@ -11,7 +11,7 @@ public class SecurityKeyHelper {
         Properties props = new Properties();
         try {
             InputStreamReader inputStreamReader = new InputStreamReader(
-                    Objects.requireNonNull(EmailHelper.class.getClassLoader().getResourceAsStream("securityKey.properties")),
+                    Objects.requireNonNull(EmailDecryptor.class.getClassLoader().getResourceAsStream("securityKey.properties")),
                     StandardCharsets.UTF_8);
             props.load(inputStreamReader);
         } catch (IOException e) {

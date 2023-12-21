@@ -1,11 +1,9 @@
-package com.example.entry.dto;
+package com.example.estate.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-
-import java.sql.Timestamp;
 
 @Data
 @AllArgsConstructor
@@ -38,6 +36,6 @@ public class ParcelWithStudentInfo {
 
     @NotNull
     @Schema(description = "Parcel Last Update Time", example = "2023-12-17 14:23:17")
-    private Timestamp lastUpdateAt;
+    private String lastUpdateAt;
 
 }

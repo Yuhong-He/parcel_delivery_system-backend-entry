@@ -12,7 +12,7 @@ import java.security.Key;
 import java.security.NoSuchAlgorithmException;
 import java.util.Properties;
 
-public class EmailHelper {
+public class EmailDecryptor {
     private static final String ALGORITHM = "AES";
 
     public static Email decrypt(byte[] encryptedData) throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException {
