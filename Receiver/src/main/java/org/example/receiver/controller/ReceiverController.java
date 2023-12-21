@@ -21,10 +21,8 @@ import org.springframework.data.mongodb.core.aggregation.AggregationOperation;
 import org.springframework.data.mongodb.core.aggregation.AggregationResults;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -41,16 +39,6 @@ public class ReceiverController {
 
     @Autowired
     private MongoTemplate mongoTemplate;
-    private final AggregationOperation sort = Aggregation.sort(Sort.Direction.DESC, "tracks.create_at");
-    private final AggregationOperation unwind = Aggregation.unwind("tracks");
-    private final AggregationOperation secondSort = Aggregation.sort(Sort.Direction.DESC, "latestTrack.create_at");
-
-    private final AggregationOperation group = Aggregation.group("_id")
-            .first("type").as("type")
-            .first("address1").as("address1")
-            .first("address2").as("address2")
-            .first("student").as("student")
-            .first("tracks").as("latestTrack");
 
 
     @Autowired
@@ -100,8 +88,16 @@ public class ReceiverController {
 
 
 
-
+//        AggregationOperation sort = Aggregation.sort(Sort.Direction.DESC, "tracks.create_at");
+//        AggregationOperation unwind = Aggregation.unwind("tracks");
+//        AggregationOperation secondSort = Aggregation.sort(Sort.Direction.DESC, "latestTrack.create_at");
 //        AggregationOperation matchid = Aggregation.match(Criteria.where("parcel.student").is(receiverID));
+//        AggregationOperation group = Aggregation.group("_id")
+//                .first("type").as("type")
+//                .first("address1").as("address1")
+//                .first("address2").as("address2")
+//                .first("student").as("student")
+//                .first("tracks").as("latestTrack");
 //        Aggregation aggregation = newAggregation(matchid, unwind, sort, group, secondSort);
 //        AggregationResults<ParcelWithLatestTrack> results = mongoTemplate.aggregate(aggregation, "parcel", ParcelWithLatestTrack.class);
 //        List<ParcelWithLatestTrack> parcels = results.getMappedResults();
@@ -109,41 +105,24 @@ public class ReceiverController {
 //        int pageSize = 10;
 //        int fromIndex = Math.min((pageNo - 1) * pageSize, total);
 //        int toIndex = Math.min(fromIndex + pageSize, total);
-//        List<ParcelWithLatestTrack> list = parcels.subList(fromIndex, toIndex);
+//        List<org.example.receiver.dto.ParcelWithLatestTrack> list = parcels.subList(fromIndex, toIndex);
+//        List<ParcelWithStudentInfo> newList = new ArrayList<>();
+//        for(org.example.receiver.dto.ParcelWithLatestTrack p : list) {
+//            User student = userService.getStudentById(p.getStudent());
+//            com.example.estate.entity.ParcelTrack latestTrack = p.getLatestTrack();
+//            ParcelWithStudentInfo parcelWithStudentInfo = new ParcelWithStudentInfo(
+//                    p.getId(), new StudentInfo(student.getUsername(), student.getEmail()),
+//                    p.getType(), p.getAddress1(), p.getAddress2(), latestTrack.getDescription(), latestTrack.getCreate_at());
+//            newList.add(parcelWithStudentInfo);
+//        }
 //        long pages = (long) Math.ceil((double) total / pageSize);
 //        return new CustomPage(list, total, pageSize, pageNo, pages);
 
     }
 
     @ApiResponse(responseCode = "200", description = "Success")
-    @Operation(summary = "get notifications", description = "Allowed User gets notifications")
-    @GetMapping("/getNotification")
-    public CustomPage getNotification(@RequestParam int receiverID, Integer pageNo) {
-        AggregationOperation matchid = Aggregation.match(Criteria.where("parcel.student").is(receiverID));
-        AggregationOperation matchdes = Aggregation.match(Criteria.where("tracks.description").is("to be confirmed"));
-        Aggregation aggregation = newAggregation(matchid, unwind, sort, matchdes,group, secondSort);
-        AggregationResults<ParcelWithLatestTrack> results = mongoTemplate.aggregate(aggregation, "parcel", ParcelWithLatestTrack.class);
-        List<ParcelWithLatestTrack> parcels = results.getMappedResults();
-        int total = parcels.size();
-        int pageSize = 10;
-        int fromIndex = Math.min((pageNo - 1) * pageSize, total);
-        int toIndex = Math.min(fromIndex + pageSize, total);
-        List<org.example.receiver.dto.ParcelWithLatestTrack> list = parcels.subList(fromIndex, toIndex);
-        List<ParcelWithStudentInfo> newList = new ArrayList<>();
-        for(org.example.receiver.dto.ParcelWithLatestTrack p : list) {
-            User student = userService.getStudentById(p.getStudent());
-            com.example.estate.entity.ParcelTrack latestTrack = p.getLatestTrack();
-            ParcelWithStudentInfo parcelWithStudentInfo = new ParcelWithStudentInfo(
-                    p.getId(), new StudentInfo(student.getUsername(), student.getEmail()),
-                    p.getType(), p.getAddress1(), p.getAddress2(), latestTrack.getDescription(), latestTrack.getCreate_at());
-            newList.add(parcelWithStudentInfo);
-        }
-        long pages = (long) Math.ceil((double) total / pageSize);
-        return new CustomPage(list, total, pageSize, pageNo, pages);
-    }
-    @ApiResponse(responseCode = "200", description = "Success")
     @Operation(summary = "get a parcelList", description = "Allowed User gets their parcels")
-    @GetMapping("/confirmed")
+    @PostMapping("/confirmed")
     public boolean confirmed(@RequestParam int receiverID, String uuid) {
         Parcel parcel = parcelRepository.findById(uuid).orElse(null);;
         if(parcel != null){
