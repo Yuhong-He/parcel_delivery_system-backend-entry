@@ -21,7 +21,6 @@ public enum ResultCodeEnum {
     EMAIL_ALREADY_REGISTERED(215, "Email already registered"),
     USERNAME_LENGTH(216, "Username length incorrect"),
     PASSWORD_LENGTH(217, "Password length incorrect"),
-    NO_VERIFICATION_CODE(218, "Verification code does not send before"),
     TOKEN_EXPIRED(223,"Token Expired"),
     TOKEN_ERROR(224,"Invalid Token"),
     MISS_TOKEN(225,"Bad Request: Token Missing"),
