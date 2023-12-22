@@ -23,21 +23,19 @@ public class LogController {
 
     @Operation(description = "receive a new Parcel")
     @PostMapping(value = "/newTrail")
-    @Parameters(value = {@Parameter (description = "newParcel")})
-    public int newTrail(@RequestBody ParcelTrack data) {
+    public int newTrail(@Parameter (description = "newParcel") @RequestBody ParcelTrack data) {
         return 0;
     }
 
     @Operation(description = "update a parcelTrack")
     @PutMapping("/updateTrack")
-    @Parameters(value = {@Parameter(description = "updated ParcelTrack")})
-    public int updateTrack(@RequestBody ParcelTrack parcelTrack){
+    public int updateTrack(@Parameter(description = "updated ParcelTrack") @RequestBody ParcelTrack parcelTrack){
         return 0;
     }
 
     @Operation(description = "get parcelTracks of a receiver")
     @GetMapping(value = "/getReceiverTrail")
-    public List<ParcelTrack> newTrail(@RequestParam int userId) {
+    public List<ParcelTrack> newTrail(@Parameter(description = "user's ID") @RequestParam int userId) {
         return null;
     }
 
