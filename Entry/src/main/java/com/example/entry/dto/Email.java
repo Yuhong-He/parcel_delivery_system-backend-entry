@@ -26,4 +26,5 @@ public class Email {
     public String toString() {
         return to + ";;" + subject + ";;" + htmlBody;
     }
+
 }
