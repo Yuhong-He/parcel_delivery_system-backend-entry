@@ -2,7 +2,6 @@ package com.example.parcel_delivery_systembackendentry;
 
 import com.alibaba.fastjson2.JSON;
 import com.example.parcel_delivery_systembackendentry.MongoDB.ParcelTrack;
-import com.example.parcel_delivery_systembackendentry.message.MQ;
 import com.rabbitmq.client.DeliverCallback;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;

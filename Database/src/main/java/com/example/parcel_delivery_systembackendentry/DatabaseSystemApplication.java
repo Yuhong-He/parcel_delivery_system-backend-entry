@@ -4,7 +4,7 @@ import com.alibaba.fastjson2.JSON;
 import com.example.parcel_delivery_systembackendentry.MongoDB.Parcel;
 import com.example.parcel_delivery_systembackendentry.MongoDB.ParcelTrack;
 import com.example.parcel_delivery_systembackendentry.dto.ParcelTrackWithParcelID;
-import com.example.parcel_delivery_systembackendentry.message.MQ;
+import com.example.parcel_delivery_systembackendentry.enumeration.message.MQ;
 import io.swagger.v3.oas.annotations.enums.SecuritySchemeIn;
 import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
 import io.swagger.v3.oas.annotations.security.SecurityScheme;

@@ -1,10 +1,13 @@
 package com.example.parcel_delivery_systembackendentry.controller;
 
+import com.example.parcel_delivery_systembackendentry.MongoDB.Parcel;
 import com.example.parcel_delivery_systembackendentry.MongoDB.ParcelTrack;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import jakarta.annotation.Resource;
 import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -31,8 +34,9 @@ public class ParcelController {
 
     @Operation(description = "get parcelTracks of a receiver")
     @GetMapping(value = "/getReceiverTrack")
-    public List<ParcelTrack> getReceiverTrack(@Parameter(description = "user's ID") @RequestParam int userId) {
-        return null;
+    public List<Parcel> getReceiverTrack(@Parameter(description = "user's ID") @RequestParam int receiverId) {
+        Query query = new Query(Criteria.where("student").is(receiverId));
+        return mongoTemplate.find(query, Parcel.class);
     }
 
 

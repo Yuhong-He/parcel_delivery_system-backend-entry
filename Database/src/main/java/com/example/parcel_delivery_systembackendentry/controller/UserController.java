@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/databse/user")
+@RequestMapping("/database/user")
 public class UserController {
 
     @Resource

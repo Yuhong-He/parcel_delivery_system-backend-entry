@@ -1,4 +1,4 @@
-package com.example.parcel_delivery_systembackendentry.message;
+package com.example.parcel_delivery_systembackendentry.enumeration.message;
 
 import com.alibaba.fastjson2.JSON;
 import com.example.parcel_delivery_systembackendentry.MongoDB.ParcelTrack;
