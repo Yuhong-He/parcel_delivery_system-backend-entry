@@ -1,7 +1,7 @@
-package com.example.parcel_delivery_systembackendentry.mapper;
+package com.example.parcel_delivery_systembackendentry.mybatis;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.example.parcel_delivery_systembackendentry.entity.User;
+import com.example.parcel_delivery_systembackendentry.mybatis.User;
 import org.apache.ibatis.annotations.Mapper;
 
 @Mapper

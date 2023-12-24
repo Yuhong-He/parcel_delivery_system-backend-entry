@@ -1,7 +1,7 @@
 package com.example.parcel_delivery_systembackendentry.message;
 
 import com.alibaba.fastjson2.JSON;
-import com.example.parcel_delivery_systembackendentry.entity.ParcelTrack;
+import com.example.parcel_delivery_systembackendentry.MongoDB.ParcelTrack;
 import com.rabbitmq.client.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -34,32 +34,32 @@ public class MQ {
         return channel;
     }
 
-    public static void sendLog(ParcelTrack parcelTrack) throws Exception {
+    public static void sendTo(ParcelTrack parcelTrack) throws Exception {
         String message = JSON.toJSONString(parcelTrack);
         establishConnection().basicPublish("", "Log", MessageProperties.PERSISTENT_TEXT_PLAIN, message.getBytes());
         System.out.println("Sending Log: " + message + " to Log System...");
     }
 
-    public static void notifyReceiver(ParcelTrack parcelTrack, int receiverID) throws Exception {
-        String message = JSON.toJSONString(parcelTrack);
-        Channel channel = establishConnection();
-        channel.exchangeDeclare("ReceiverExchange", "direct");
-        channel.basicPublish("ReceiverExchange", String.valueOf(receiverID), MessageProperties.PERSISTENT_TEXT_PLAIN, message.getBytes());
-        System.out.println("Sending notification: " + message + " to Receiver " + " ...");
-    }
+//    public static void notifyReceiver(ParcelTrack parcelTrack, int receiverID) throws Exception {
+//        String message = JSON.toJSONString(parcelTrack);
+//        Channel channel = establishConnection();
+//        channel.exchangeDeclare("ReceiverExchange", "direct");
+//        channel.basicPublish("ReceiverExchange", String.valueOf(receiverID), MessageProperties.PERSISTENT_TEXT_PLAIN, message.getBytes());
+//        System.out.println("Sending notification: " + message + " to Receiver " + " ...");
+//    }
+//
+//    public static void consumeNotification(int receiverId, DeliverCallback callBack) throws Exception {
+//        Channel channel = establishConnection();
+//        channel.exchangeDeclare("ReceiverExchange", "direct");
+//        channel.queueDeclare(String.valueOf(receiverId), durable,true, false, null);
+//        channel.queueBind(String.valueOf(receiverId),"ReceiverExchange",String.valueOf(receiverId));
+//        System.out.println("Binding "+receiverId+" to Receiver exchange...");
+//        channel.basicConsume(String.valueOf(receiverId), autoAck, callBack, consumerTag -> {
+//        });
+//
+//    }
 
-    public static void consumeNotification(int receiverId, DeliverCallback callBack) throws Exception {
-        Channel channel = establishConnection();
-        channel.exchangeDeclare("ReceiverExchange", "direct");
-        channel.queueDeclare(String.valueOf(receiverId), durable,true, false, null);
-        channel.queueBind(String.valueOf(receiverId),"ReceiverExchange",String.valueOf(receiverId));
-        System.out.println("Binding "+receiverId+" to Receiver exchange...");
-        channel.basicConsume(String.valueOf(receiverId), autoAck, callBack, consumerTag -> {
-        });
-
-    }
-
-    public static void consumeLog(DeliverCallback callBack) throws Exception {
+    public static void consumePost(DeliverCallback callBack) throws Exception {
         Channel channel = establishConnection();
         channel.basicConsume("Log", autoAck, callBack, consumerTag -> {
         });

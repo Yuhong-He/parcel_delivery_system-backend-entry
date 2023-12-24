@@ -1,7 +1,7 @@
-package com.example.parcel_delivery_systembackendentry.service;
+package com.example.parcel_delivery_systembackendentry.mybatis;
 
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.example.parcel_delivery_systembackendentry.entity.User;
+import com.example.parcel_delivery_systembackendentry.mybatis.User;
 
 import java.util.List;
 

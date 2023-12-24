@@ -1,11 +1,11 @@
-package com.example.parcel_delivery_systembackendentry.service.impl;
+package com.example.parcel_delivery_systembackendentry.mybatis;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.example.parcel_delivery_systembackendentry.entity.User;
+import com.example.parcel_delivery_systembackendentry.mybatis.User;
 import com.example.parcel_delivery_systembackendentry.enumeration.UserTypeEnum;
-import com.example.parcel_delivery_systembackendentry.mapper.UserMapper;
-import com.example.parcel_delivery_systembackendentry.service.UserService;
+import com.example.parcel_delivery_systembackendentry.mybatis.UserMapper;
+import com.example.parcel_delivery_systembackendentry.mybatis.UserService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 

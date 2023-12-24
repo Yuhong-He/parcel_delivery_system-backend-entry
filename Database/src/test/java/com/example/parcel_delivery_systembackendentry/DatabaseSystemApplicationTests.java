@@ -1,7 +1,7 @@
 package com.example.parcel_delivery_systembackendentry;
 
 import com.alibaba.fastjson2.JSON;
-import com.example.parcel_delivery_systembackendentry.entity.ParcelTrack;
+import com.example.parcel_delivery_systembackendentry.MongoDB.ParcelTrack;
 import com.example.parcel_delivery_systembackendentry.message.MQ;
 import com.rabbitmq.client.DeliverCallback;
 import org.junit.jupiter.api.Test;
@@ -21,14 +21,14 @@ class ParcelDeliverySystemBackendEntryApplicationTests {
         };
 
         try {
-            ParcelTrack parcelTrack1 = new ParcelTrack("123", "Test Log", 1);
-            ParcelTrack parcelTrack2 = new ParcelTrack("456", "Test Log", 1);
-            MQ.consumeLog(callback);
-            MQ.sendLog(parcelTrack1);
-            MQ.consumeNotification(1, callback);
-            MQ.consumeNotification(2, callback);
-            MQ.notifyReceiver(parcelTrack1, 1);
-            MQ.notifyReceiver(parcelTrack2, 2);
+//            ParcelTrack parcelTrack1 = new ParcelTrack(1,"123", "Test Log", 1);
+//            ParcelTrack parcelTrack2 = new ParcelTrack(1,"456", "Test Log", 1);
+//            MQ.consumeLog(callback);
+//            MQ.sendLog(parcelTrack1);
+//            MQ.consumeNotification(1, callback);
+//            MQ.consumeNotification(2, callback);
+//            MQ.notifyReceiver(parcelTrack1, 1);
+//            MQ.notifyReceiver(parcelTrack2, 2);
         } catch (Exception e) {
             System.out.println("Exception:" + e);
             e.printStackTrace();

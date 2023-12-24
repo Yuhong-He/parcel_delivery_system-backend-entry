@@ -1,4 +1,4 @@
-package com.example.parcel_delivery_systembackendentry.entity;
+package com.example.parcel_delivery_systembackendentry.mybatis;
 
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;

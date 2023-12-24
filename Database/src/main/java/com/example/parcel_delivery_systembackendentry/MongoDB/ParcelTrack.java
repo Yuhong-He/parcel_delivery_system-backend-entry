@@ -1,11 +1,13 @@
-package com.example.parcel_delivery_systembackendentry.entity;
+package com.example.parcel_delivery_systembackendentry.MongoDB;
 
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.example.parcel_delivery_systembackendentry.dto.ParcelTrackWithParcelID;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -13,20 +15,9 @@ import java.sql.Timestamp;
 
 @Data
 @NoArgsConstructor
+@AllArgsConstructor
 @Schema(description = "Parcel Track Information")
-@TableName("parcel_track")
 public class ParcelTrack {
-
-    @NotNull
-    @Schema(description = "Track ID", example = "25")
-    @TableId(value="id", type= IdType.AUTO)
-    private Integer id;
-
-    @NotNull
-    @Schema(description = "Parcel ID", example = "9aed31b2-1577-4c9c-9778-f2101fa4cf46")
-    @TableField("parcel_id")
-    private String parcel_id;
-
     @NotNull
     @Schema(description = "Track Description", example = "Estate Service created parcel label")
     @TableField("description")
@@ -52,9 +43,11 @@ public class ParcelTrack {
     @TableField("create_at")
     private Timestamp create_at;
 
-    public ParcelTrack(String parcel_id, String description, Integer create_by) {
-        this.parcel_id = parcel_id;
-        this.description = description;
-        this.create_by = create_by;
+    public ParcelTrack(ParcelTrackWithParcelID parcelTrackWithParcelID) {
+        this.description = parcelTrackWithParcelID.getDescription();
+        this.postman = parcelTrackWithParcelID.getPostman();
+        this.merville_room = parcelTrackWithParcelID.isMerville_room();
+        this.create_at = parcelTrackWithParcelID.getCreate_at();
+        this.create_by = parcelTrackWithParcelID.getCreate_by();
     }
 }
