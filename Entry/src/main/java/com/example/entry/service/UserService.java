@@ -15,6 +15,5 @@ public interface UserService extends IService<User> {
     User getUserById(Integer id);
     User getUserByEmail(String email, int type);
     List<User> getStudentsBySearchName(String name);
-    User getStudentById(int id);
 
 }
