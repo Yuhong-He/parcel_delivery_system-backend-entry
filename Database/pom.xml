@@ -10,15 +10,14 @@
         <relativePath /> <!-- lookup parent from repository -->
     </parent>
     <groupId>com.example</groupId>
-    <artifactId>Entry</artifactId>
+    <artifactId>Database_System</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>parcel_delivery_system-backend-entry</name>
-    <description>parcel_delivery_system-backend-entry</description>
+    <name>Database_System</name>
+    <description>Database_System</description>
     <properties>
         <java.version>17</java.version>
     </properties>
     <dependencies>
-
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
@@ -78,16 +77,6 @@
             <version>3.5.3.1</version>
         </dependency>
 
-        <!-- redis -->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-data-redis</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-pool2</artifactId>
-        </dependency>
-
         <!-- jwt -->
         <dependency>
             <groupId>io.jsonwebtoken</groupId>
@@ -113,21 +102,41 @@
             <version>2.0.23</version>
         </dependency>
 
-        <!-- springdoc -->
+        <!-- aliyun interface util-->
+        <dependency>
+            <groupId>com.github.suxingli</groupId>
+            <artifactId>aliyuncs</artifactId>
+            <version>1.0.1</version>
+        </dependency>
+
+        <!-- aliyun dm -->
+        <dependency>
+            <groupId>com.aliyun</groupId>
+            <artifactId>aliyun-java-sdk-dm</artifactId>
+            <version>3.3.2</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.rabbitmq</groupId>
+            <artifactId>amqp-client</artifactId>
+            <version>5.16.0</version>
+        </dependency>
+
         <dependency>
             <groupId>org.springdoc</groupId>
             <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
             <version>2.2.0</version>
         </dependency>
 
-        <!-- jackson-databind -->
+        <!-- mongodb -->
         <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-databind</artifactId>
-            <version>2.16.0</version>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-mongodb</artifactId>
+            <version>3.2.0</version>
         </dependency>
 
     </dependencies>
+
 
     <build>
         <plugins>
