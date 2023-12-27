@@ -2,8 +2,7 @@ package com.example.database_system;
 
 import com.example.database_system.MongoDB.Parcel;
 import com.example.database_system.MongoDB.ParcelRepository;
-import com.example.database_system.MongoDB.ParcelTrack;
-import com.example.database_system.dto.ParcelInfo;
+import com.example.database_system.dto.ParcelTrackWithParcelID;
 import com.example.database_system.message.MQ;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,7 +12,6 @@ import org.springframework.data.domain.Slice;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.List;
 
 @SpringBootTest
 class DatabaseSystemApplicationTests {
@@ -29,14 +27,12 @@ class DatabaseSystemApplicationTests {
 //        };
 
         try {
-            ParcelInfo parcelInfo = new ParcelInfo();
-            String desc = "Estate Service created parcel label";
+            String desc = "Test";
             LocalDateTime currentDateTime = LocalDateTime.now();
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
             String formattedDateTime = currentDateTime.format(formatter);
-            ParcelTrack parcelTrack = new ParcelTrack(desc, 3, formattedDateTime);
-            Parcel parcel = new Parcel(parcelInfo, List.of(parcelTrack));
-            MQ.sendToDatabase(parcel);
+            ParcelTrackWithParcelID parcelTrackWithParcelID = new ParcelTrackWithParcelID("014da20d-867a-4c2c-a1a8-10b9360abce1", desc, 3, false, 0, formattedDateTime);
+            MQ.sendToDatabase(parcelTrackWithParcelID);
 
         } catch (Exception e) {
             System.out.println("Exception:" + e);

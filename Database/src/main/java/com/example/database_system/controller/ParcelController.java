@@ -2,7 +2,6 @@ package com.example.database_system.controller;
 
 import com.example.database_system.MongoDB.Parcel;
 import com.example.database_system.MongoDB.ParcelRepository;
-import com.example.database_system.MongoDB.ParcelTrack;
 import com.example.database_system.dto.ParcelTrackWithParcelID;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -17,14 +16,14 @@ import org.springframework.web.bind.annotation.*;
 public class ParcelController {
 //    @Resource
 //    private MongoTemplate mongoTemplate;
-
     @Resource
     private ParcelRepository parcelRepository;
 
-    @Operation(description = "receive a new Parcel")
-    @PostMapping(value = "/newTrack")
-    public int newTrail(@Parameter (description = "newParcel") @RequestBody ParcelTrack data) {
+    @Operation(description = "Create a new Parcel")
+    @PostMapping(value = "/newParcel")
+    public int newParcel(@Parameter(description = "an Parcel Object") @RequestBody Parcel parcel) {
         //implemented using mom
+        parcelRepository.save(parcel);
         return 0;
     }
 
