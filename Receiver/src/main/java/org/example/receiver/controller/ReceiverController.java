@@ -54,12 +54,6 @@ public class ReceiverController {
         return parcel.getTracks();
     }
 
-    @RequestMapping(value = "/AAA")
-    public String AAA() {
-        return "hellow";
-    }
-
-
     @ApiResponse(responseCode = "200", description = "Success")
     @Operation(summary = "get a parcelList", description = "Allowed User gets their parcels")
     @GetMapping("/getParcelList")
@@ -130,7 +124,7 @@ public class ReceiverController {
             LocalDateTime currentDateTime = LocalDateTime.now();
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
             String formattedDateTime = currentDateTime.format(formatter);
-            ParcelTrack parcelTrack = new ParcelTrack("confirmed", receiverID, formattedDateTime);
+            ParcelTrack parcelTrack = new ParcelTrack("Confirmed", receiverID, formattedDateTime);
             parcelTracks.add(parcelTrack);
             parcelRepository.save(parcel);
             return true;
