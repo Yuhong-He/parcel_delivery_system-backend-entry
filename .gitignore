@@ -38,3 +38,4 @@ build/
 Entry/src/main/resources/application.yml
 Estate/src/main/resources/application.yml
 Email/src/main/resources/application.properties
+Receiver/src/main/resources/application.yml
