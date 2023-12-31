@@ -5,11 +5,7 @@ import com.example.entry.dto.Email;
 import com.example.entry.enumeration.ResultCodeEnum;
 import com.example.entry.dto.LoginData;
 import com.example.entry.dto.RegisterData;
-import com.example.entry.entity.EmailTimer;
-import com.example.entry.entity.EmailVerification;
 import com.example.entry.entity.User;
-import com.example.entry.service.EmailTimerService;
-import com.example.entry.service.EmailVerificationService;
 import com.example.entry.service.UserService;
 import com.example.entry.utils.*;
 import io.swagger.v3.oas.annotations.Operation;
@@ -21,6 +17,7 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirements;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
@@ -30,9 +27,12 @@ import javax.crypto.NoSuchPaddingException;
 import java.io.IOException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 @Slf4j
 @RestController
@@ -44,10 +44,7 @@ public class UserController {
     private UserService userService;
 
     @Autowired
-    private EmailTimerService emailTimerService;
-
-    @Autowired
-    private EmailVerificationService evService;
+    private StringRedisTemplate stringRedisTemplate;
 
     @ApiResponse(responseCode = "200", description = "Success",
             content = {@Content(mediaType = "application/json",
@@ -65,29 +62,34 @@ public class UserController {
             if (userService.getUserByEmail(emailAddress, type) == null) {
 
                 // 3. check that no emails have been sent within a minute
-                EmailTimer oldEmailTimer = emailTimerService.read(emailAddress, "verificationCode");
-                if(oldEmailTimer == null || !EmailTimerUtils.repeatEmail(oldEmailTimer)) {
+                String check_1_minute = stringRedisTemplate.opsForValue().get(emailAddress + "|check_1_minute");
+                if(check_1_minute == null) {
 
                     // a. generate verification code
-                    EmailVerification emailVerification = EmailVerificationUtils.createVerification(emailAddress);
+                    String verificationCode = VerificationUtils.generateVerificationCode();
 
                     // b. send email
                     Email email = new Email(emailAddress, "Register Verification Code",
-                            getRegisterVerificationEmailBody(emailVerification.getVerificationCode()));
+                            getRegisterVerificationEmailBody(verificationCode));
                     RestTemplate template = new RestTemplate();
                     try {
                         template.postForEntity("https://mail.ucdparcel.ie/send", EmailEncryptor.encrypt(email), String.class);
                     } catch (IOException | NoSuchPaddingException | NoSuchAlgorithmException | InvalidKeyException |
                              IllegalBlockSizeException | BadPaddingException e) {
                         log.error("Problem on encrypt email: " + e.getMessage());
+                        return Result.error(ResultCodeEnum.FAIL);
                     }
 
                     // c. record verification code
-                    evService.create(emailVerification);
+                    stringRedisTemplate.opsForValue().set(emailAddress, verificationCode);
+                    stringRedisTemplate.expire(emailAddress, 5, TimeUnit.MINUTES);
 
-                    // d. record the action in email timer
-                    EmailTimer newEmailTimer = new EmailTimer(emailAddress, "verificationCode");
-                    emailTimerService.create(newEmailTimer);
+                    // d. record 1 minute limitation
+                    LocalDateTime currentDateTime = LocalDateTime.now();
+                    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+                    String formattedDateTime = currentDateTime.format(formatter);
+                    stringRedisTemplate.opsForValue().set(emailAddress + "|check_1_minute", "send at " + formattedDateTime);
+                    stringRedisTemplate.expire(emailAddress + "|check_1_minute", 1, TimeUnit.MINUTES);
 
                     return Result.ok();
                 } else {
@@ -116,8 +118,6 @@ public class UserController {
         int type = data.getType();
         String code = data.getCode();
 
-        EmailVerification ev = evService.read(email);
-
         // 1. check username valid
         if (UserUtils.validateUsername(username)) {
 
@@ -130,25 +130,21 @@ public class UserController {
                     // 4. check email registered
                     if (userService.getUserByEmail(email, type) == null) {
 
+                        String verificationCode = stringRedisTemplate.opsForValue().get(email);
+
                         // 5. check email verification code send before
-                        if(ev != null) {
+                        if(verificationCode != null) {
 
-                            // 6. check verification code expiration
-                            if (!EmailVerificationUtils.isExpiration(ev)) {
-
-                                // 7. check verification code correct
-                                if (code.equals(ev.getVerificationCode())) {
-                                    User user = new User(username, pwd, email, type);
-                                    userService.register(user);
-                                    return Result.ok();
-                                } else {
-                                    return Result.error(ResultCodeEnum.VERIFY_CODE_INCORRECT);
-                                }
+                            // 6. check verification code correct
+                            if (!verificationCode.isEmpty() && code.equals(verificationCode)) {
+                                User user = new User(username, pwd, email, type);
+                                userService.register(user);
+                                return Result.ok();
                             } else {
-                                return Result.error(ResultCodeEnum.VERIFY_CODE_EXPIRED);
+                                return Result.error(ResultCodeEnum.VERIFY_CODE_INCORRECT);
                             }
                         } else {
-                            return Result.error(ResultCodeEnum.NO_VERIFICATION_CODE);
+                            return Result.error(ResultCodeEnum.VERIFY_CODE_EXPIRED);
                         }
                     } else {
                         return Result.error(ResultCodeEnum.EMAIL_ALREADY_REGISTERED);

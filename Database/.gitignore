@@ -1,5 +1,6 @@
 HELP.md
-**/target/
+target/
+!.mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/
 
@@ -13,7 +14,7 @@ HELP.md
 .sts4-cache
 
 ### IntelliJ IDEA ###
-**/.idea
+.idea
 *.iws
 *.iml
 *.ipr
@@ -30,12 +31,5 @@ build/
 
 ### VS Code ###
 .vscode/
-
-### DS_Store ###
-**/.DS_Store
-
-**/src/main/resources/securityKey.properties
-Entry/src/main/resources/application.yml
-Estate/src/main/resources/application.yml
-Email/src/main/resources/application.properties
-Receiver/src/main/resources/application.yml
+/src/main/resources/securityKey.properties
+/src/main/resources/application.yml

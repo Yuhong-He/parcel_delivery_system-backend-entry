@@ -21,7 +21,6 @@ public class PostmanController {
         }
         return 0;
     }
-
     /*
      * get all parcels
      * more details of the storage admin to be confirmed*/
@@ -30,6 +29,10 @@ public class PostmanController {
         return null;
     }
 
+    @PostMapping("/deliver")
+    public  int toDeliver(){
+        return 0;
+    }
 
     @PostMapping("/collectionSign")
     public int collectionSign(@RequestParam int receiverID, @RequestParam int parcelID) {
