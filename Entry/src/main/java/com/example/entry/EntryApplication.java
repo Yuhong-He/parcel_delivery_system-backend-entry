@@ -10,10 +10,10 @@ import org.springframework.boot.web.servlet.ServletComponentScan;
 @SecurityScheme(name = "Accesstoken", type = SecuritySchemeType.APIKEY, in = SecuritySchemeIn.HEADER)
 @SpringBootApplication
 @ServletComponentScan
-public class ParcelDeliverySystemBackendEntryApplication {
+public class EntryApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(ParcelDeliverySystemBackendEntryApplication.class, args);
+        SpringApplication.run(EntryApplication.class, args);
     }
 
 }
