@@ -7,6 +7,7 @@ public class PermissionHelper {
                 "/user/login",
                 "/user/sendRegisterEmail",
                 "/user/register",
+                "/",
                 "/api-docs",
                 "/swagger-ui/*"
         };
