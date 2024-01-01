@@ -6,4 +6,6 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 
 public interface ParcelRepository extends MongoRepository<Parcel, String> {
     Slice<Parcel> findAllByStudent(int StudentId, Pageable pageable);
+
+    Slice<Parcel> findAllByType(int type, Pageable pageable);
 }
