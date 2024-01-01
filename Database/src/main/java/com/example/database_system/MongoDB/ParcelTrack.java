@@ -1,6 +1,5 @@
 package com.example.database_system.MongoDB;
 
-import com.baomidou.mybatisplus.annotation.TableField;
 import com.example.database_system.dto.ParcelTrackWithParcelID;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
@@ -15,27 +14,22 @@ import lombok.NoArgsConstructor;
 public class ParcelTrack {
     @NotNull
     @Schema(description = "Track Description", example = "Estate Service created parcel label")
-    @TableField("description")
     private String description;
 
     @NotNull
     @Schema(description = "Postman User ID", example = "2")
-    @TableField("postman")
     private Integer postman;
 
     @NotNull
     @Schema(description = "Assigned to Merville Room?", example = "true")
-    @TableField("merville_room")
     private boolean merville_room;
 
     @NotNull
     @Schema(description = "User ID who create this Track", example = "4")
-    @TableField("create_by")
     private Integer create_by;
 
     @NotNull
     @Schema(description = "Track Created Time", example = "2023-12-17 14:23:17")
-    @TableField("create_at")
     private String create_at;
 
 

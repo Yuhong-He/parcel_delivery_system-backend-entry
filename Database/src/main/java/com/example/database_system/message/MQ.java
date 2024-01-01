@@ -3,7 +3,6 @@ package com.example.database_system.message;
 import com.alibaba.fastjson2.JSON;
 import com.example.database_system.MongoDB.Parcel;
 import com.example.database_system.MongoDB.ParcelTrack;
-import com.example.database_system.dto.ParcelTrackWithParcelID;
 import com.rabbitmq.client.*;
 import jakarta.annotation.Resource;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,8 +34,8 @@ public class MQ implements ApplicationRunner {
         autoAck = b2;
     }
 
-    public static void sendToDatabase(ParcelTrackWithParcelID parcelTrackWithParcelID) throws Exception {
-        String message = JSON.toJSONString(parcelTrackWithParcelID);
+    public static void sendToDatabase(Parcel parcel) throws Exception {
+        String message = JSON.toJSONString(parcel);
         establishConnection().basicPublish("", "Database", MessageProperties.PERSISTENT_TEXT_PLAIN, message.getBytes());
         System.out.println("Sending Log: " + message + " to Log System...");
     }
