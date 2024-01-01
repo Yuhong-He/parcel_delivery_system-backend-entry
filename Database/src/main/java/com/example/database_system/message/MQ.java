@@ -3,7 +3,6 @@ package com.example.database_system.message;
 import com.alibaba.fastjson2.JSON;
 import com.example.database_system.MongoDB.Parcel;
 import com.example.database_system.MongoDB.ParcelTrack;
-import com.example.database_system.dto.ParcelTrackWithParcelID;
 import com.rabbitmq.client.*;
 import jakarta.annotation.Resource;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,14 +28,14 @@ public class MQ implements ApplicationRunner {
     private void setStaticFields(
             @Value("${MQ.address}") String s,
             @Value("#{new Boolean('${MQ.durable}')}") Boolean b1,
-            @Value("#{new Boolean('${MQ.autoAck}')}") Boolean b2){
+            @Value("#{new Boolean('${MQ.autoAck}')}") Boolean b2) {
         address = s;
         durable = b1;
         autoAck = b2;
     }
 
-    public static void sendToDatabase(ParcelTrackWithParcelID parcelTrackWithParcelID) throws Exception {
-        String message = JSON.toJSONString(parcelTrackWithParcelID);
+    public static void sendToDatabase(Parcel parcel) throws Exception {
+        String message = JSON.toJSONString(parcel);
         establishConnection().basicPublish("", "Database", MessageProperties.PERSISTENT_TEXT_PLAIN, message.getBytes());
         System.out.println("Sending Log: " + message + " to Log System...");
     }
@@ -48,7 +47,7 @@ public class MQ implements ApplicationRunner {
     }
 
     public static Channel establishConnection() throws Exception {
-        System.out.println("Connecting to rabbitMQServer:"+address+" ...");
+        System.out.println("Connecting to rabbitMQServer:" + address + " ...");
         ConnectionFactory factory = new ConnectionFactory();
         factory.setUri(address);
         Connection connection = factory.newConnection();
@@ -60,11 +59,11 @@ public class MQ implements ApplicationRunner {
     @Override
     public void run(ApplicationArguments args) throws Exception {
         new Thread(() -> {
-            //MOM consumes Post requests
+            // MOM consumes Post requests
             try {
                 MQ.consumePost((consumerTag, delivery) -> {
                     System.out.println("Received new post ");
-                    ParcelTrackWithParcelID message = JSON.parseObject(delivery.getBody(), ParcelTrackWithParcelID.class);
+                    Parcel message = JSON.parseObject(delivery.getBody(), Parcel.class);
                     newParcelTrack(message);
                 });
             } catch (Exception e) {
@@ -75,31 +74,14 @@ public class MQ implements ApplicationRunner {
 
     }
 
-    private void newParcelTrack(ParcelTrackWithParcelID parcelTrackWithParcelID) {
-        System.out.println("Parceltrack" + parcelTrackWithParcelID);
-        Query query = new Query(Criteria.where("_id").is(parcelTrackWithParcelID.getParcelId()));
-        Update update = new Update().push("tracks", new ParcelTrack(parcelTrackWithParcelID));
+    private void newParcelTrack(Parcel parcel) {
+        for (ParcelTrack parcelTrack : parcel.getTracks()) {
+            System.out.println("Adding Parceltrack" + parcelTrack);
+        }
+        Query query = new Query(Criteria.where("_id").is(parcel.getId()));
+        Update update = new Update().push("tracks", parcel.getTracks());
         mongoTemplate.updateFirst(query, update, Parcel.class);
         System.out.println("Parceltrack added successfully");
     }
-//    public static void notifyReceiver(ParcelTrack parcelTrack, int receiverID) throws Exception {
-//        String message = JSON.toJSONString(parcelTrack);
-//        Channel channel = establishConnection();
-//        channel.exchangeDeclare("ReceiverExchange", "direct");
-//        channel.basicPublish("ReceiverExchange", String.valueOf(receiverID), MessageProperties.PERSISTENT_TEXT_PLAIN, message.getBytes());
-//        System.out.println("Sending notification: " + message + " to Receiver " + " ...");
-//    }
-//
-//    public static void consumeNotification(int receiverId, DeliverCallback callBack) throws Exception {
-//        Channel channel = establishConnection();
-//        channel.exchangeDeclare("ReceiverExchange", "direct");
-//        channel.queueDeclare(String.valueOf(receiverId), durable,true, false, null);
-//        channel.queueBind(String.valueOf(receiverId),"ReceiverExchange",String.valueOf(receiverId));
-//        System.out.println("Binding "+receiverId+" to Receiver exchange...");
-//        channel.basicConsume(String.valueOf(receiverId), autoAck, callBack, consumerTag -> {
-//        });
-//
-//    }
-
 
 }

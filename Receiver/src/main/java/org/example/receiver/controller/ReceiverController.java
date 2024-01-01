@@ -1,4 +1,4 @@
-package org.example.receiver.controller;
+    package org.example.receiver.controller;
 
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import org.example.receiver.dto.ParcelWithStudentInfo;
