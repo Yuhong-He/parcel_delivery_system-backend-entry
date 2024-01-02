@@ -1,33 +1,24 @@
     package org.example.receiver.controller;
 
-import com.baomidou.mybatisplus.core.toolkit.StringUtils;
-import org.example.receiver.dto.ParcelWithStudentInfo;
-import org.example.receiver.dto.StudentInfo;
-import org.example.receiver.entity.User;
-import org.example.receiver.service.UserService;
-import org.example.receiver.dto.CustomPage;
-import org.example.receiver.dto.ParcelWithLatestTrack;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import org.bson.types.ObjectId;
-import org.example.receiver.entity.Parcel;
-import org.example.receiver.entity.ParcelTrack;
-import org.example.receiver.repository.ParcelRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.data.mongodb.core.aggregation.Aggregation;
-import org.springframework.data.mongodb.core.aggregation.AggregationOperation;
-import org.springframework.data.mongodb.core.aggregation.AggregationResults;
-import org.springframework.data.mongodb.core.query.Criteria;
-import org.springframework.data.mongodb.core.query.Query;
-import org.springframework.web.bind.annotation.*;
+    import com.baomidou.mybatisplus.core.toolkit.StringUtils;
+    import io.swagger.v3.oas.annotations.Operation;
+    import io.swagger.v3.oas.annotations.responses.ApiResponse;
+    import org.bson.types.ObjectId;
+    import org.example.receiver.dto.CustomPage;
+    import org.example.receiver.entity.Parcel;
+    import org.example.receiver.entity.ParcelTrack;
+    import org.example.receiver.repository.ParcelRepository;
+    import org.example.receiver.service.UserService;
+    import org.springframework.beans.factory.annotation.Autowired;
+    import org.springframework.data.domain.Sort;
+    import org.springframework.data.mongodb.core.MongoTemplate;
+    import org.springframework.data.mongodb.core.query.Criteria;
+    import org.springframework.data.mongodb.core.query.Query;
+    import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.List;
-import static org.springframework.data.mongodb.core.aggregation.Aggregation.*;
+    import java.time.LocalDateTime;
+    import java.time.format.DateTimeFormatter;
+    import java.util.List;
 
 @RestController
 @RequestMapping("/Receiver")

@@ -5,7 +5,6 @@ import com.example.postman.dto.ParcelTrack;
 import com.example.postman.message.MQ;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
-import jakarta.annotation.Resource;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
@@ -40,7 +39,7 @@ public class PostmanController {
     }
 
     @Operation(description = "deliver a parcel")
-    @PutMapping("/deliver/{Id}")
+    @PostMapping("/deliver/{Id}")
     public int deliver(@RequestParam int postmanId, @Parameter(description = "updated ParcelTrack with Parcel ID") @RequestBody Parcel parcel) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         String formattedDateTime = LocalDateTime.now().format(formatter);
