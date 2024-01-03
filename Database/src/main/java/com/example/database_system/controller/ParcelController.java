@@ -8,7 +8,6 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.annotation.Resource;
 import org.springframework.data.domain.PageRequest;
-
 import org.springframework.data.domain.Slice;
 import org.springframework.web.bind.annotation.*;
 
@@ -34,7 +33,7 @@ public class ParcelController {
         return 0;
     }
 
-    @Operation(description = "get parcelTracks of a receiver", responses = {
+    @Operation(description = "get parcels of a receiver", responses = {
             @ApiResponse(description = "a JSONised Slice<Page> object") })
     @GetMapping(value = "/getReceiverParcel")
     public Slice<Parcel> getReceiverParcel(@Parameter(description = "user's ID") @RequestParam int receiverId,
@@ -42,6 +41,12 @@ public class ParcelController {
         return parcelRepository.findAllByStudent(receiverId, PageRequest.of(pageNumber,pageSize));
     }
 
+    @Operation(description = "get a specific parcel", responses = {
+            @ApiResponse(description = "a Parcel Object") })
+    @GetMapping(value = "/getParcelWithId/{id}")
+    public Parcel getParcelWithId(@Parameter(description = "user's ID") @PathVariable String id){
+        return parcelRepository.findById(id).orElse(null);
+    }
     @Operation(description = "Get all letters for a postman")
     @GetMapping(value = "/getLetters")
     public Slice<Parcel> getLetters(@RequestParam int pageNumber, @RequestParam int pageSize) {

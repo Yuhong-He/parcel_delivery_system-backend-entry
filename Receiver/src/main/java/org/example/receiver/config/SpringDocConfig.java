@@ -11,7 +11,7 @@ public class SpringDocConfig {
     public OpenAPI myOpenAPI() {
         return new OpenAPI()
                 .info(new Info()
-                        .title("UCD Parcel Delivery System - Estate Server API")
+                        .title("UCD Parcel Delivery System - Receiver API")
                         .version("v1.0.0")
                 );
     }

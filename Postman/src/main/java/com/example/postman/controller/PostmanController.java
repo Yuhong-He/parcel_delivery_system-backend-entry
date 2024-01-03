@@ -43,15 +43,12 @@ public class PostmanController {
     }
 
     @Operation(description = "Deliver a parcel")
-    @PostMapping("/deliver/{Id}")
-    public int deliver(@RequestParam int postmanId,
+    @PostMapping("/deliver/{postmanId}")
+    public int deliver(@PathVariable int postmanId,
             @Parameter(description = "updated ParcelTrack with Parcel ID") @RequestBody Parcel parcel) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         String formattedDateTime = LocalDateTime.now().format(formatter);
-        ParcelTrack parcelTrack = new ParcelTrack("Postman delivered the parcel", postmanId, formattedDateTime);
-        List<ParcelTrack> parcelTracks = new ArrayList<>();
-        parcelTracks.add(parcelTrack);
-        parcel.setTracks(parcelTracks);
+        parcel.setTracks(List.of(new ParcelTrack("Postman delivered the parcel", postmanId, formattedDateTime)));
         try {
             MQ.sendToDatabase(parcel);
         } catch (Exception e) {

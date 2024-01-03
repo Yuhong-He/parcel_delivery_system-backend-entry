@@ -8,18 +8,18 @@ import org.example.receiver.dto.ParcelWithLatestTrack;
 import org.example.receiver.entity.Parcel;
 import org.example.receiver.entity.ParcelTrack;
 import org.example.receiver.message.MQ;
-import org.example.receiver.repository.ParcelRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.*;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestTemplate;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.List;
 
 import static org.springframework.data.mongodb.core.aggregation.Aggregation.*;
@@ -29,20 +29,18 @@ import static org.springframework.data.mongodb.core.aggregation.Aggregation.*;
 @RequestMapping("/")
 public class ReceiverController {
 
-    private final ParcelRepository parcelRepository;
+    @Value("${database.address}")
+    private String database = "";
 
+    RestTemplate restTemplate = new RestTemplate();
     @Autowired
     private MongoTemplate mongoTemplate;
 
-    @Autowired
-    public ReceiverController(ParcelRepository parcelRepository) {
-        this.parcelRepository = parcelRepository;
-    }
     @ApiResponse(responseCode = "200", description = "Success")
     @Operation(summary = "Get parcel tracks", description = "Allowed User gets one parcel tracks")
     @GetMapping("/getHistory")
     public List<ParcelTrack> getHistory(@RequestParam String uuid) {
-        Parcel parcel = parcelRepository.findById(uuid).orElse(null);;
+        Parcel parcel = restTemplate.getForObject(database+"/parcel/getParcelWithId/{id}",Parcel.class, uuid);
         if (parcel == null)
             return null;
         return parcel.getTracks();
@@ -84,20 +82,15 @@ public class ReceiverController {
     @Operation(summary = "Confirm address", description = "Allowed student confirm the delivery address")
     @PostMapping("/confirmed")
     public boolean confirmed(@RequestParam int receiverID, String uuid) {
-        Parcel parcel = parcelRepository.findById(uuid).orElse(null);
+        Parcel parcel = restTemplate.getForObject(database+"/parcel/getParcelWithId/{id}",Parcel.class, uuid);
+
         if(parcel != null){
-            List<ParcelTrack> parcelTracks = parcel.getTracks();
-            LocalDateTime currentDateTime = LocalDateTime.now();
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-            String formattedDateTime = currentDateTime.format(formatter);
-            ParcelTrack parcelTrack = new ParcelTrack("Receiver Confirmed the address", receiverID, formattedDateTime);
-            parcelTracks.add(parcelTrack);
-            List<ParcelTrack> newTracks = new ArrayList<>();
-            newTracks.add(parcelTrack);
-            parcel.setTracks(newTracks);
-            Parcel parcel1 = new Parcel(uuid, 1, "", "", receiverID, List.of(new ParcelTrack("Receiver Confirmed the address", receiverID, formattedDateTime)));
+            String formattedDateTime = LocalDateTime.now().format(formatter);
+            parcel.setTracks(List.of(new ParcelTrack("Receiver Confirmed the address", receiverID, formattedDateTime)));
+//            Parcel parcel1 = new Parcel(uuid, 1, "", "", receiverID, List.of(new ParcelTrack("Receiver Confirmed the address", receiverID, formattedDateTime)));
             try {
-                MQ.sendToDatabase(parcel1);
+                MQ.sendToDatabase(parcel);
             } catch (Exception e) {
                 log.info("Exception: " + e);
             }
