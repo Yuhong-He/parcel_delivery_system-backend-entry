@@ -9,7 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
-
+import org.springframework.data.domain.Page;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -31,8 +31,8 @@ public class PostmanController {
     @GetMapping(value = "/getLetters")
     public List<Parcel> getLetters(@Parameter(description = "postman's id") @RequestParam int id) {
         List<Parcel> result = new ArrayList<>();
-        String endPoint = "/parcel/getLetters?pageNumber=1&pageSize=5";
-        List<Parcel> parcels = restTemplate.getForObject(database + endPoint, List.class);
+        String endPoint = "/parcel/getLetters?pageNumber=0&pageSize=5";
+        Page<Parcel> parcels = restTemplate.getForObject(database + endPoint, Page.class);
         assert parcels != null;
         for (Parcel parcel : parcels) {
             List<ParcelTrack> parcelTracks = parcel.getTracks();
@@ -43,15 +43,12 @@ public class PostmanController {
     }
 
     @Operation(description = "Deliver a parcel")
-    @PostMapping("/deliver/{Id}")
-    public int deliver(@RequestParam int postmanId,
+    @PostMapping("/deliver/{postmanId}")
+    public int deliver(@PathVariable int postmanId,
             @Parameter(description = "updated ParcelTrack with Parcel ID") @RequestBody Parcel parcel) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         String formattedDateTime = LocalDateTime.now().format(formatter);
-        ParcelTrack parcelTrack = new ParcelTrack("Postman delivered the parcel", postmanId, formattedDateTime);
-        List<ParcelTrack> parcelTracks = new ArrayList<>();
-        parcelTracks.add(parcelTrack);
-        parcel.setTracks(parcelTracks);
+        parcel.setTracks(List.of(new ParcelTrack("Postman delivered the parcel", postmanId, formattedDateTime)));
         try {
             MQ.sendToDatabase(parcel);
         } catch (Exception e) {

@@ -38,13 +38,22 @@ class DatabaseSystemApplicationTests {
     @Test
     void MongoDBTest(@Autowired ParcelRepository parcelRepository) {
         Slice<Parcel> parcelSlice = parcelRepository.findAllByStudent(4, PageRequest.of(0, 3));
-
+        Slice<Parcel> letterSlice = parcelRepository.findAllByType(3,PageRequest.of(0,3));
         while (true) {
             parcelSlice.getContent().forEach((e) -> {
                 System.out.println(e);
             });
             if (parcelSlice.hasNext())
                 parcelSlice = parcelRepository.findAllByStudent(4, parcelSlice.nextPageable());
+            else
+                break;
+        }
+        while (true) {
+            letterSlice.getContent().forEach((e) -> {
+                System.out.println(e);
+            });
+            if (letterSlice.hasNext())
+                letterSlice = parcelRepository.findAllByType(3, letterSlice.nextPageable());
             else
                 break;
         }
