@@ -8,7 +8,7 @@ import org.example.receiver.entity.Parcel;
 import org.example.receiver.entity.ParcelTrack;
 import org.example.receiver.message.MQ;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
@@ -39,9 +39,9 @@ public class ReceiverController {
     @Operation(summary = "Get a parcelList", description = "Allowed student gets their parcels")
     @GetMapping("/getParcelList")
     public CustomPage getParcelList(@RequestParam int receiverID, int pageNo,int pagesize) {
-        Page<Parcel> parcels = restTemplate.getForObject(database+"/getReceiverParcel?receiverId="+receiverID+
+        PageImpl<Parcel> parcels = restTemplate.getForObject(database+"/parcel/getReceiverParcel?receiverId="+receiverID+
                 "&pageNumber="+pageNo+
-                "&pageSize="+pagesize, Page.class);
+                "&pageSize="+pagesize, PageImpl.class);
 
         return new CustomPage(parcels, parcels.getTotalElements(), pagesize, pageNo, parcels.getTotalPages());
     }
