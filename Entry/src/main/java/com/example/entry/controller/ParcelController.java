@@ -18,6 +18,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
@@ -31,6 +32,12 @@ public class ParcelController {
     @Autowired
     private UserService userService;
 
+    @Value("${address.estate}")
+    private String estateUrl = "";
+
+    @Value("${address.receiver}")
+    private String receiverUrl = "";
+
     @ApiResponse(responseCode = "200", description = "Success",
             content = {@Content(mediaType = "application/json",
                     schema = @Schema(implementation = Result.class))})
@@ -38,7 +45,7 @@ public class ParcelController {
     @PostMapping("/create")
     public Result<Object> create(@RequestBody CreateParcelData data) {
         RestTemplate template = new RestTemplate();
-        template.postForEntity("http://localhost:18082/estate/createParcel?staff=" + BaseContext.getCurrentId().intValue(), data, String.class);
+        template.postForEntity(estateUrl + "/createParcel?staff=" + BaseContext.getCurrentId().intValue(), data, String.class);
         return Result.ok();
     }
 
@@ -51,17 +58,26 @@ public class ParcelController {
         User currentUser = userService.getUserById(Math.toIntExact(BaseContext.getCurrentId()));
         if (currentUser.getType() == UserTypeEnum.EstateServiceStaff.getVal()) {
             RestTemplate template = new RestTemplate();
-            ResponseEntity<String> responseEntity = template.getForEntity("http://localhost:18082/estate/list?page=" + pageNo, String.class);
-            String jsonResponse = responseEntity.getBody();
-            ObjectMapper objectMapper = new ObjectMapper();
-            try {
-                return Result.ok(objectMapper.readValue(jsonResponse, CustomPage.class));
-            } catch (JsonProcessingException e) {
-                log.error("Cast CustomPage error: " + e.getMessage());
-                return Result.error(e.getMessage(), ResultCodeEnum.FAIL);
-            }
+            ResponseEntity<String> responseEntity = template.getForEntity(estateUrl + "/list?page=" + pageNo, String.class);
+            return getObjectResult(responseEntity);
+        } else if (currentUser.getType() == UserTypeEnum.Student.getVal()) {
+            RestTemplate template = new RestTemplate();
+            ResponseEntity<String> responseEntity = template.getForEntity(receiverUrl + "/getParcelList?receiverID=" + BaseContext.getCurrentId()
+                    + "&pageNo=" + pageNo, String.class);
+            return getObjectResult(responseEntity);
         } else {
             return Result.error(ResultCodeEnum.NO_PERMISSION);
+        }
+    }
+
+    private Result<Object> getObjectResult(ResponseEntity<String> responseEntity) {
+        String jsonResponse = responseEntity.getBody();
+        ObjectMapper objectMapper = new ObjectMapper();
+        try {
+            return Result.ok(objectMapper.readValue(jsonResponse, CustomPage.class));
+        } catch (JsonProcessingException e) {
+            log.error("Cast CustomPage error: " + e.getMessage());
+            return Result.error(e.getMessage(), ResultCodeEnum.FAIL);
         }
     }
 }
