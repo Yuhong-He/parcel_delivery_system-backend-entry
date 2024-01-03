@@ -15,9 +15,6 @@ import org.springframework.web.client.RestTemplate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
-
-import static org.springframework.data.mongodb.core.aggregation.Aggregation.*;
-
 @Slf4j
 @RestController
 @RequestMapping("/")
