@@ -1,16 +1,12 @@
 package org.example.receiver.controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import lombok.extern.slf4j.Slf4j;
-import org.example.receiver.dto.CustomPage;
 import org.example.receiver.entity.Parcel;
 import org.example.receiver.entity.ParcelTrack;
 import org.example.receiver.message.MQ;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
@@ -32,7 +28,7 @@ public class ReceiverController {
     @Operation(summary = "Get parcel tracks", description = "Allowed User gets one parcel tracks")
     @GetMapping("/getHistory")
     public List<ParcelTrack> getHistory(@RequestParam String uuid) {
-        Parcel parcel = restTemplate.getForObject(database+"/parcel/getParcelWithId/{id}",Parcel.class, uuid);
+        Parcel parcel = restTemplate.getForObject(database + "/parcel/getParcelWithId/{id}", Parcel.class, uuid);
         if (parcel == null)
             return null;
         return parcel.getTracks();
@@ -52,13 +48,11 @@ public class ReceiverController {
     @Operation(summary = "Confirm address", description = "Allowed student confirm the delivery address")
     @PostMapping("/confirmed")
     public boolean confirmed(@RequestParam int receiverID, String uuid) {
-        Parcel parcel = restTemplate.getForObject(database+"/parcel/getParcelWithId/{id}",Parcel.class, uuid);
-
+        Parcel parcel = restTemplate.getForObject(database + "/parcel/getParcelWithId/{id}", Parcel.class, uuid);
         if(parcel != null){
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
             String formattedDateTime = LocalDateTime.now().format(formatter);
             parcel.setTracks(List.of(new ParcelTrack("Receiver Confirmed the address", receiverID, formattedDateTime)));
-//            Parcel parcel1 = new Parcel(uuid, 1, "", "", receiverID, List.of(new ParcelTrack("Receiver Confirmed the address", receiverID, formattedDateTime)));
             try {
                 MQ.sendToDatabase(parcel);
             } catch (Exception e) {
@@ -66,7 +60,6 @@ public class ReceiverController {
             }
             return true;
         }
-
         return false;
     }
 }
