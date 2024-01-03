@@ -1,0 +1,13 @@
+<project>
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>com.example</groupId>
+    <artifactId>UCD_parcel_backend</artifactId>
+    <version>0.0.1</version>
+    <packaging>pom</packaging>
+
+    <modules>
+        <module>Database</module>
+        <module>Postman</module>
+        <module>Receiver</module>
+    </modules>
+</project>

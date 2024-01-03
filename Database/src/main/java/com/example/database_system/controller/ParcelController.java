@@ -8,13 +8,12 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.annotation.Resource;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 
 import org.springframework.data.domain.Slice;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/Log")
+@RequestMapping("/parcel")
 public class ParcelController {
     @Resource
     private ParcelRepository parcelRepository;
@@ -46,6 +45,7 @@ public class ParcelController {
     @Operation(description = "Get all letters for a postman")
     @GetMapping(value = "/getLetters")
     public Slice<Parcel> getLetters(@RequestParam int pageNumber, @RequestParam int pageSize) {
+        System.out.println("I am here");
         return parcelRepository.findAllByType(3, PageRequest.of(pageNumber,pageSize));
     }
 

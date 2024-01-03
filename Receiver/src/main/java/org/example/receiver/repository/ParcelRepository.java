@@ -7,5 +7,4 @@ import java.util.List;
 
 @Repository
 public interface ParcelRepository extends MongoRepository<Parcel, String>{
-    List<Parcel> findByStudent(int student);
 }

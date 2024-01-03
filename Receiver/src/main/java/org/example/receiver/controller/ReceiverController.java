@@ -1,24 +1,18 @@
-    package org.example.receiver.controller;
+package org.example.receiver.controller;
 
-import com.baomidou.mybatisplus.core.toolkit.StringUtils;
-import org.example.receiver.dto.ParcelWithStudentInfo;
-import org.example.receiver.dto.StudentInfo;
-import org.example.receiver.entity.User;
-import org.example.receiver.service.UserService;
-import org.example.receiver.dto.CustomPage;
-import org.example.receiver.dto.ParcelWithLatestTrack;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import org.bson.types.ObjectId;
+import lombok.extern.slf4j.Slf4j;
+import org.example.receiver.dto.CustomPage;
+import org.example.receiver.dto.ParcelWithLatestTrack;
 import org.example.receiver.entity.Parcel;
 import org.example.receiver.entity.ParcelTrack;
+import org.example.receiver.message.MQ;
 import org.example.receiver.repository.ParcelRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.data.mongodb.core.aggregation.Aggregation;
-import org.springframework.data.mongodb.core.aggregation.AggregationOperation;
-import org.springframework.data.mongodb.core.aggregation.AggregationResults;
+import org.springframework.data.mongodb.core.aggregation.*;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.web.bind.annotation.*;
@@ -27,108 +21,89 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+
 import static org.springframework.data.mongodb.core.aggregation.Aggregation.*;
 
+@Slf4j
 @RestController
-@RequestMapping("/Receiver")
+@RequestMapping("/")
 public class ReceiverController {
+
     private final ParcelRepository parcelRepository;
 
     @Autowired
-    private UserService userService;
-
-    @Autowired
     private MongoTemplate mongoTemplate;
-
 
     @Autowired
     public ReceiverController(ParcelRepository parcelRepository) {
         this.parcelRepository = parcelRepository;
     }
     @ApiResponse(responseCode = "200", description = "Success")
-    @Operation(summary = "get parce traces", description = "Allowed User gets one parcel tracks")
+    @Operation(summary = "Get parcel tracks", description = "Allowed User gets one parcel tracks")
     @GetMapping("/getHistory")
     public List<ParcelTrack> getHistory(@RequestParam String uuid) {
         Parcel parcel = parcelRepository.findById(uuid).orElse(null);;
-        if(parcel == null){return null;}
+        if (parcel == null)
+            return null;
         return parcel.getTracks();
     }
 
     @ApiResponse(responseCode = "200", description = "Success")
-    @Operation(summary = "get a parcelList", description = "Allowed User gets their parcels")
+    @Operation(summary = "Get a parcelList", description = "Allowed student gets their parcels")
     @GetMapping("/getParcelList")
-    public CustomPage getParcelList(@RequestParam int receiverID, int pageNo, String lastId) {
+    public CustomPage getParcelList(@RequestParam int receiverID, int pageNo) {
+        int size = 10;
+        int skip = (pageNo - 1) * size;
+        SkipOperation skipOperation = skip(skip);
+        LimitOperation limitOperation = limit(size);
 
-        final Criteria criteriaDefinition = Criteria.where("student").is(receiverID);
-        final Query query = new Query(criteriaDefinition).with(Sort.by(Sort.Order.desc("_id")));
+        Criteria criteria = Criteria.where("student").is(receiverID);
+        MatchOperation matchOperation = match(criteria);
+        AggregationOperation unwind = Aggregation.unwind("tracks");
+        AggregationOperation sort = Aggregation.sort(Sort.Direction.DESC, "tracks.create_at");
+        AggregationOperation group = Aggregation.group("_id")
+                .first("type").as("type")
+                .first("student").as("student")
+                .last("tracks.description").as("lastUpdateDesc")
+                .last("tracks.create_at").as("lastUpdateAt");
+        AggregationOperation secondSort = Aggregation.sort(Sort.Direction.DESC, "lastUpdateAt");
+
+        Aggregation aggregation = newAggregation(matchOperation, unwind, sort, group, secondSort, skipOperation, limitOperation);
+
+        AggregationResults<ParcelWithLatestTrack> results = mongoTemplate.aggregate(aggregation, "parcel", ParcelWithLatestTrack.class);
+        List<ParcelWithLatestTrack> parcels = results.getMappedResults();
+
+        final Query query = new Query(criteria);
         long total = mongoTemplate.count(query, Parcel.class);
-        int pageSize = 10;
-        int pages = (int) Math.ceil(total / (double) pageSize);
-        if (pageNo<=0 || pageNo> pages) {
-            pageNo = 1;
-        }
+        long pages = (long) Math.ceil((double) total / size);
 
-        if (StringUtils.isNotBlank(lastId)) {
-            if (pageNo != 1) {
-                criteriaDefinition.and("_id").lt(new ObjectId(lastId));
-            }
-            query.limit(pageSize);
-        } else {
-            int skip = pageSize * (pageNo - 1);
-            query.skip(skip).limit(pageSize);
-        }
-        List<Parcel> newList = mongoTemplate.find(query, Parcel.class);
-        return new CustomPage(newList, total, pageSize, pageNo, pages);
-
-
-
-//        AggregationOperation sort = Aggregation.sort(Sort.Direction.DESC, "tracks.create_at");
-//        AggregationOperation unwind = Aggregation.unwind("tracks");
-//        AggregationOperation secondSort = Aggregation.sort(Sort.Direction.DESC, "latestTrack.create_at");
-//        AggregationOperation matchid = Aggregation.match(Criteria.where("parcel.student").is(receiverID));
-//        AggregationOperation group = Aggregation.group("_id")
-//                .first("type").as("type")
-//                .first("address1").as("address1")
-//                .first("address2").as("address2")
-//                .first("student").as("student")
-//                .first("tracks").as("latestTrack");
-//        Aggregation aggregation = newAggregation(matchid, unwind, sort, group, secondSort);
-//        AggregationResults<ParcelWithLatestTrack> results = mongoTemplate.aggregate(aggregation, "parcel", ParcelWithLatestTrack.class);
-//        List<ParcelWithLatestTrack> parcels = results.getMappedResults();
-//        int total = parcels.size();
-//        int pageSize = 10;
-//        int fromIndex = Math.min((pageNo - 1) * pageSize, total);
-//        int toIndex = Math.min(fromIndex + pageSize, total);
-//        List<org.example.receiver.dto.ParcelWithLatestTrack> list = parcels.subList(fromIndex, toIndex);
-//        List<ParcelWithStudentInfo> newList = new ArrayList<>();
-//        for(org.example.receiver.dto.ParcelWithLatestTrack p : list) {
-//            User student = userService.getStudentById(p.getStudent());
-//            com.example.estate.entity.ParcelTrack latestTrack = p.getLatestTrack();
-//            ParcelWithStudentInfo parcelWithStudentInfo = new ParcelWithStudentInfo(
-//                    p.getId(), new StudentInfo(student.getUsername(), student.getEmail()),
-//                    p.getType(), p.getAddress1(), p.getAddress2(), latestTrack.getDescription(), latestTrack.getCreate_at());
-//            newList.add(parcelWithStudentInfo);
-//        }
-//        long pages = (long) Math.ceil((double) total / pageSize);
-//        return new CustomPage(list, total, pageSize, pageNo, pages);
-
+        return new CustomPage(parcels, (int) total, size, pageNo, pages);
     }
 
     @ApiResponse(responseCode = "200", description = "Success")
-    @Operation(summary = "get a parcelList", description = "Allowed User gets their parcels")
+    @Operation(summary = "Confirm address", description = "Allowed student confirm the delivery address")
     @PostMapping("/confirmed")
     public boolean confirmed(@RequestParam int receiverID, String uuid) {
-        Parcel parcel = parcelRepository.findById(uuid).orElse(null);;
+        Parcel parcel = parcelRepository.findById(uuid).orElse(null);
         if(parcel != null){
             List<ParcelTrack> parcelTracks = parcel.getTracks();
             LocalDateTime currentDateTime = LocalDateTime.now();
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
             String formattedDateTime = currentDateTime.format(formatter);
-            ParcelTrack parcelTrack = new ParcelTrack("Confirmed", receiverID, formattedDateTime);
+            ParcelTrack parcelTrack = new ParcelTrack("Receiver Confirmed the address", receiverID, formattedDateTime);
             parcelTracks.add(parcelTrack);
-            parcelRepository.save(parcel);
+            List<ParcelTrack> newTracks = new ArrayList<>();
+            newTracks.add(parcelTrack);
+            parcel.setTracks(newTracks);
+            Parcel parcel1 = new Parcel(uuid, 1, "", "", receiverID, List.of(new ParcelTrack("Receiver Confirmed the address", receiverID, formattedDateTime)));
+            try {
+                MQ.sendToDatabase(parcel1);
+            } catch (Exception e) {
+                log.info("Exception: " + e);
+            }
             return true;
         }
+
         return false;
     }
 }

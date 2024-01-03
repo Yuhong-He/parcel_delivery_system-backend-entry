@@ -15,8 +15,8 @@ public class SpringDocConfig {
     public OpenAPI myOpenAPI() {
         return new OpenAPI()
                 .info(new Info()
-                        .title("Database System -  API")
+                        .title("Postman -  API")
                         .version("v1.0.0")
-                ).security(List.of(new SecurityRequirement().addList("Accesstoken")));
+                );
     }
 }

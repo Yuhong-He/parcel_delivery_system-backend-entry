@@ -17,6 +17,7 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirements;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
@@ -46,6 +47,9 @@ public class UserController {
     @Autowired
     private StringRedisTemplate stringRedisTemplate;
 
+    @Value("${address.email}")
+    private String mailUrl = "";
+
     @ApiResponse(responseCode = "200", description = "Success",
             content = {@Content(mediaType = "application/json",
                     schema = @Schema(implementation = Result.class))})
@@ -73,7 +77,7 @@ public class UserController {
                             getRegisterVerificationEmailBody(verificationCode));
                     RestTemplate template = new RestTemplate();
                     try {
-                        template.postForEntity("https://mail.ucdparcel.ie/send", EmailEncryptor.encrypt(email), String.class);
+                        template.postForEntity(mailUrl + "/send", EmailEncryptor.encrypt(email), String.class);
                     } catch (IOException | NoSuchPaddingException | NoSuchAlgorithmException | InvalidKeyException |
                              IllegalBlockSizeException | BadPaddingException e) {
                         log.error("Problem on encrypt email: " + e.getMessage());

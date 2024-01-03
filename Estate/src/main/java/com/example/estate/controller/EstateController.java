@@ -15,15 +15,17 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.data.mongodb.core.aggregation.Aggregation;
-import org.springframework.data.mongodb.core.aggregation.AggregationOperation;
-import org.springframework.data.mongodb.core.aggregation.AggregationResults;
+import org.springframework.data.mongodb.core.aggregation.*;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.web.bind.annotation.*;
 import com.example.estate.service.UserService;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
+
+import static org.springframework.data.mongodb.core.aggregation.Aggregation.limit;
+import static org.springframework.data.mongodb.core.aggregation.Aggregation.skip;
 
 @Slf4j
 @RestController
@@ -48,7 +50,7 @@ public class EstateController {
 
     @ApiResponse(responseCode = "200", description = "Success")
     @Operation(summary = "Create a parcel", description = "Allowed Estate Service Staff create a parcel.")
-    @PostMapping("/estate/createParcel")
+    @PostMapping("/createParcel")
     public void createParcel(@RequestBody ParcelInfo data,
                              @Parameter(description = "Estate Service Staff Account ID") @RequestParam("staff") int staff) {
         if (ParcelUtils.validateParcelCreate(data)) {
@@ -73,9 +75,13 @@ public class EstateController {
             content = {@Content(mediaType = "application/json",
                     schema = @Schema(implementation = CustomPage.class))})
     @Operation(summary = "List parcels", description = "Allowed Estate Service Staff list parcels.")
-    @GetMapping("/estate/list")
+    @GetMapping("/list")
     public CustomPage getParcelList(@Parameter(description = "Page Number") @RequestParam("page") Integer pageNo) {
         int size = 10;
+        int skip = (pageNo - 1) * size;
+        SkipOperation skipOperation = skip(skip);
+        LimitOperation limitOperation = limit(size);
+
         AggregationOperation unwind = Aggregation.unwind("tracks");
         AggregationOperation sort = Aggregation.sort(Sort.Direction.DESC, "tracks.create_at");
         AggregationOperation group = Aggregation.group("_id")
@@ -85,15 +91,12 @@ public class EstateController {
                 .first("student").as("student")
                 .first("tracks").as("latestTrack");
         AggregationOperation secondSort = Aggregation.sort(Sort.Direction.DESC, "latestTrack.create_at");
-        Aggregation aggregation = Aggregation.newAggregation(unwind, sort, group, secondSort);
+        Aggregation aggregation = Aggregation.newAggregation(unwind, sort, group, secondSort, skipOperation, limitOperation);
         AggregationResults<ParcelWithLatestTrack> results = mongoTemplate.aggregate(aggregation, "parcel", ParcelWithLatestTrack.class);
         List<ParcelWithLatestTrack> parcels = results.getMappedResults();
-        int total = parcels.size();
-        int fromIndex = Math.min((pageNo - 1) * size, total);
-        int toIndex = Math.min(fromIndex + size, total);
-        List<ParcelWithLatestTrack> list = parcels.subList(fromIndex, toIndex);
+
         List<ParcelWithStudentInfo> newList = new ArrayList<>();
-        for(ParcelWithLatestTrack p : list) {
+        for(ParcelWithLatestTrack p : parcels) {
             User student = userService.getStudentById(p.getStudent());
             ParcelTrack latestTrack = p.getLatestTrack();
             ParcelWithStudentInfo parcelWithStudentInfo = new ParcelWithStudentInfo(
@@ -101,6 +104,9 @@ public class EstateController {
                     p.getType(), p.getAddress1(), p.getAddress2(), latestTrack.getDescription(), latestTrack.getCreate_at());
             newList.add(parcelWithStudentInfo);
         }
+
+        final Query query = new Query();
+        long total = mongoTemplate.count(query, Parcel.class);
         long pages = (long) Math.ceil((double) total / size);
         return new CustomPage(newList, total, size, pageNo, pages);
     }

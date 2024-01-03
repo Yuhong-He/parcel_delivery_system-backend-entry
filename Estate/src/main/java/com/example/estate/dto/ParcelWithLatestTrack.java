@@ -8,8 +8,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.mongodb.core.mapping.MongoId;
 
-import java.util.List;
-
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
