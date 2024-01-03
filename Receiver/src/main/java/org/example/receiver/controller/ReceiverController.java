@@ -4,17 +4,11 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.example.receiver.dto.CustomPage;
-import org.example.receiver.dto.ParcelWithLatestTrack;
 import org.example.receiver.entity.Parcel;
 import org.example.receiver.entity.ParcelTrack;
 import org.example.receiver.message.MQ;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.data.mongodb.core.aggregation.*;
-import org.springframework.data.mongodb.core.query.Criteria;
-import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
@@ -33,8 +27,6 @@ public class ReceiverController {
     private String database = "";
 
     RestTemplate restTemplate = new RestTemplate();
-    @Autowired
-    private MongoTemplate mongoTemplate;
 
     @ApiResponse(responseCode = "200", description = "Success")
     @Operation(summary = "Get parcel tracks", description = "Allowed User gets one parcel tracks")
@@ -49,33 +41,12 @@ public class ReceiverController {
     @ApiResponse(responseCode = "200", description = "Success")
     @Operation(summary = "Get a parcelList", description = "Allowed student gets their parcels")
     @GetMapping("/getParcelList")
-    public CustomPage getParcelList(@RequestParam int receiverID, int pageNo) {
-        int size = 10;
-        int skip = (pageNo - 1) * size;
-        SkipOperation skipOperation = skip(skip);
-        LimitOperation limitOperation = limit(size);
+    public CustomPage getParcelList(@RequestParam int receiverID, int pageNo,int pagesize) {
+        Page<Parcel> parcels = restTemplate.getForObject(database+"/getReceiverParcel?receiverId="+receiverID+
+                "&pageNumber="+pageNo+
+                "&pageSize="+pagesize, Page.class);
 
-        Criteria criteria = Criteria.where("student").is(receiverID);
-        MatchOperation matchOperation = match(criteria);
-        AggregationOperation unwind = Aggregation.unwind("tracks");
-        AggregationOperation sort = Aggregation.sort(Sort.Direction.DESC, "tracks.create_at");
-        AggregationOperation group = Aggregation.group("_id")
-                .first("type").as("type")
-                .first("student").as("student")
-                .last("tracks.description").as("lastUpdateDesc")
-                .last("tracks.create_at").as("lastUpdateAt");
-        AggregationOperation secondSort = Aggregation.sort(Sort.Direction.DESC, "lastUpdateAt");
-
-        Aggregation aggregation = newAggregation(matchOperation, unwind, sort, group, secondSort, skipOperation, limitOperation);
-
-        AggregationResults<ParcelWithLatestTrack> results = mongoTemplate.aggregate(aggregation, "parcel", ParcelWithLatestTrack.class);
-        List<ParcelWithLatestTrack> parcels = results.getMappedResults();
-
-        final Query query = new Query(criteria);
-        long total = mongoTemplate.count(query, Parcel.class);
-        long pages = (long) Math.ceil((double) total / size);
-
-        return new CustomPage(parcels, (int) total, size, pageNo, pages);
+        return new CustomPage(parcels, parcels.getTotalElements(), pagesize, pageNo, parcels.getTotalPages());
     }
 
     @ApiResponse(responseCode = "200", description = "Success")

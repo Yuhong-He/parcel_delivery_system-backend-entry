@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.annotation.Resource;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Slice;
 import org.springframework.web.bind.annotation.*;
@@ -35,8 +36,8 @@ public class ParcelController {
 
     @Operation(description = "get parcels of a receiver", responses = {
             @ApiResponse(description = "a JSONised Slice<Page> object") })
-    @GetMapping(value = "/getReceiverParcel")
-    public Slice<Parcel> getReceiverParcel(@Parameter(description = "user's ID") @RequestParam int receiverId,
+    @GetMapping(value = "/getReceiverParcel/{id}")
+    public Page<Parcel> getReceiverParcel(@Parameter(description = "user's ID") @RequestParam int receiverId,
             @RequestParam int pageNumber, @RequestParam int pageSize) {
         return parcelRepository.findAllByStudent(receiverId, PageRequest.of(pageNumber,pageSize));
     }
@@ -49,7 +50,7 @@ public class ParcelController {
     }
     @Operation(description = "Get all letters for a postman")
     @GetMapping(value = "/getLetters")
-    public Slice<Parcel> getLetters(@RequestParam int pageNumber, @RequestParam int pageSize) {
+    public Page<Parcel> getLetters(@RequestParam int pageNumber, @RequestParam int pageSize) {
         System.out.println("I am here");
         return parcelRepository.findAllByType(3, PageRequest.of(pageNumber,pageSize));
     }
