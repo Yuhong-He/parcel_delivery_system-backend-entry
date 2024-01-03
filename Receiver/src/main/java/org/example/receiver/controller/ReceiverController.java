@@ -39,7 +39,7 @@ public class ReceiverController {
     @Operation(summary = "Get a parcelList", description = "Allowed student gets their parcels")
     @GetMapping("/getParcelList")
     public CustomPage getParcelList(@RequestParam int receiverID, int pageNo,int pagesize) {
-        Page<Parcel> parcels = restTemplate.getForObject(database+"/getReceiverParcel?receiverId="+receiverID+
+        Page<Parcel> parcels = restTemplate.getForObject(database+"/parcel/getReceiverParcel?receiverId="+receiverID+
                 "&pageNumber="+pageNo+
                 "&pageSize="+pagesize, Page.class);
 
