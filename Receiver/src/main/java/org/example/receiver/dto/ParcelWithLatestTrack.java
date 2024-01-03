@@ -1,6 +1,5 @@
-package com.example.estate.dto;
+package org.example.receiver.dto;
 
-import com.example.estate.entity.ParcelTrack;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -24,19 +23,11 @@ public class ParcelWithLatestTrack {
     private int type;
 
     @NotNull
-    @Schema(description = "UCD Residence", example = "Roebuck Hall")
-    private String address1;
+    @Schema(description = "Track Description", example = "Estate Service created parcel label")
+    private String lastUpdateDesc;
 
     @NotNull
-    @Schema(description = "Address Detail", example = "House 3, Apt 6, Room 5")
-    private String address2;
-
-    @NotNull
-    @Schema(description = "User ID of Student", example = "3")
-    private int student;
-
-    @NotNull
-    @Schema(description = "Parcel Tracks", example = "{}, {}, {}")
-    private ParcelTrack latestTrack;
+    @Schema(description = "Track Created Time", example = "2023-12-17 14:23:17")
+    private String lastUpdateAt;
 
 }

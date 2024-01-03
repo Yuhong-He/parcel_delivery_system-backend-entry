@@ -5,6 +5,7 @@ import com.example.database_system.MongoDB.Parcel;
 import com.example.database_system.MongoDB.ParcelTrack;
 import com.rabbitmq.client.*;
 import jakarta.annotation.Resource;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.ApplicationArguments;
@@ -15,6 +16,7 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Component;
 
+@Slf4j
 @Component
 public class MQ implements ApplicationRunner {
     private static String address = "amqps://ucd_parcel_admin:BylaSoDu7byPasF2@b-2cb6f3fb-3957-4aa5-ad43-ca2b22178e62.mq.eu-west-1.amazonaws.com:5671/ucd_parcel";
@@ -37,7 +39,7 @@ public class MQ implements ApplicationRunner {
     public static void sendToDatabase(Parcel parcel) throws Exception {
         String message = JSON.toJSONString(parcel);
         establishConnection().basicPublish("", "Database", MessageProperties.PERSISTENT_TEXT_PLAIN, message.getBytes());
-        System.out.println("Sending Log: " + message + " to Log System...");
+        log.info("Sending Log: " + message + " to Log System...");
     }
 
     public static void consumePost(DeliverCallback callBack) throws Exception {
@@ -47,7 +49,7 @@ public class MQ implements ApplicationRunner {
     }
 
     public static Channel establishConnection() throws Exception {
-        System.out.println("Connecting to rabbitMQServer:" + address + " ...");
+        log.info("Connecting to rabbitMQServer:" + address + " ...");
         ConnectionFactory factory = new ConnectionFactory();
         factory.setUri(address);
         Connection connection = factory.newConnection();
@@ -57,31 +59,31 @@ public class MQ implements ApplicationRunner {
     }
 
     @Override
-    public void run(ApplicationArguments args) throws Exception {
+    public void run(ApplicationArguments args) {
         new Thread(() -> {
             // MOM consumes Post requests
             try {
                 MQ.consumePost((consumerTag, delivery) -> {
-                    System.out.println("Received new post ");
+                    log.info("Received new post ");
                     Parcel message = JSON.parseObject(delivery.getBody(), Parcel.class);
                     newParcelTrack(message);
                 });
             } catch (Exception e) {
-                System.out.println("MQ exception:" + e);
+                log.info("MQ exception:" + e);
                 e.printStackTrace();
             }
-        }).run();
+        }).start();
 
     }
 
     private void newParcelTrack(Parcel parcel) {
         for (ParcelTrack parcelTrack : parcel.getTracks()) {
-            System.out.println("Adding Parceltrack" + parcelTrack);
+            log.info("Adding Parceltrack" + parcelTrack);
         }
         Query query = new Query(Criteria.where("_id").is(parcel.getId()));
         Update update = new Update().push("tracks", parcel.getTracks());
         mongoTemplate.updateFirst(query, update, Parcel.class);
-        System.out.println("Parceltrack added successfully");
+        log.info("Parceltrack added successfully");
     }
 
 }
