@@ -1,5 +1,7 @@
 package org.example.receiver.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import lombok.extern.slf4j.Slf4j;
@@ -9,6 +11,7 @@ import org.example.receiver.entity.ParcelTrack;
 import org.example.receiver.message.MQ;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
@@ -38,12 +41,11 @@ public class ReceiverController {
     @ApiResponse(responseCode = "200", description = "Success")
     @Operation(summary = "Get a parcelList", description = "Allowed student gets their parcels")
     @GetMapping("/getParcelList")
-    public CustomPage getParcelList(@RequestParam int receiverID, int pageNo,int pagesize) {
-        Page<Parcel> parcels = restTemplate.getForObject(database+"/parcel/getReceiverParcel?receiverId="+receiverID+
-                "&pageNumber="+pageNo+
-                "&pageSize="+pagesize, Page.class);
-
-        return new CustomPage(parcels, parcels.getTotalElements(), pagesize, pageNo, parcels.getTotalPages());
+    public String getParcelList(@RequestParam int receiverID, int pageNo) {
+        RestTemplate template = new RestTemplate();
+        ResponseEntity<String> responseEntity = template.getForEntity(database + "/parcel/getReceiverParcel?receiverId=" + receiverID +
+                "&pageNo=" + pageNo, String.class);
+        return responseEntity.getBody();
     }
 
     @ApiResponse(responseCode = "200", description = "Success")
