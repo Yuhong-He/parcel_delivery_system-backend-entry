@@ -15,11 +15,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 @RestController
-@RequestMapping("/Log")
+@RequestMapping("/Postman")
 public class PostmanController {
 
-    // The RestTemplate doesn't have much configuration here, so simply define it with new()
-    RestTemplate restTemplate=new RestTemplate();
+    // The RestTemplate doesn't have much configuration here, so simply define it
+    // with new()
+    RestTemplate restTemplate = new RestTemplate();
 
     @Value("${database.address}")
     private String database = "";
@@ -40,7 +41,8 @@ public class PostmanController {
 
     @Operation(description = "deliver a parcel")
     @PostMapping("/deliver/{Id}")
-    public int deliver(@RequestParam int postmanId, @Parameter(description = "updated ParcelTrack with Parcel ID") @RequestBody Parcel parcel) {
+    public int deliver(@RequestParam int postmanId,
+            @Parameter(description = "updated ParcelTrack with Parcel ID") @RequestBody Parcel parcel) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         String formattedDateTime = LocalDateTime.now().format(formatter);
         ParcelTrack parcelTrack = new ParcelTrack("Postman delivered the parcel", postmanId, formattedDateTime);
@@ -49,12 +51,11 @@ public class PostmanController {
         parcel.setTracks(parcelTracks);
         try {
             MQ.sendToDatabase(parcel);
-        }catch (Exception e){
-            System.out.println("Exception during sending Parcel to MQ:" +e);
+        } catch (Exception e) {
+            System.out.println("Exception during sending Parcel to MQ:" + e);
             e.printStackTrace();
         }
         return 0;
     }
-
 
 }

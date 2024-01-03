@@ -7,6 +7,7 @@
     import org.example.receiver.dto.CustomPage;
     import org.example.receiver.entity.Parcel;
     import org.example.receiver.entity.ParcelTrack;
+    import org.example.receiver.message.MQ;
     import org.example.receiver.repository.ParcelRepository;
     import org.example.receiver.service.UserService;
     import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +19,7 @@
 
     import java.time.LocalDateTime;
     import java.time.format.DateTimeFormatter;
+    import java.util.ArrayList;
     import java.util.List;
 
 @RestController
@@ -115,11 +117,20 @@ public class ReceiverController {
             LocalDateTime currentDateTime = LocalDateTime.now();
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
             String formattedDateTime = currentDateTime.format(formatter);
-            ParcelTrack parcelTrack = new ParcelTrack("Confirmed", receiverID, formattedDateTime);
+            ParcelTrack parcelTrack = new ParcelTrack("Receriver Confirmed the address", receiverID, formattedDateTime);
             parcelTracks.add(parcelTrack);
-            parcelRepository.save(parcel);
+            List<ParcelTrack> newTracks = new ArrayList<>();
+            newTracks.add(parcelTrack);
+            parcel.setTracks(newTracks);
+            try {
+                MQ.sendToDatabase(parcel);
+            } catch (Exception e) {
+                System.out.println("Exception: " + e);
+                e.printStackTrace();
+            }
             return true;
         }
+
         return false;
     }
 }
