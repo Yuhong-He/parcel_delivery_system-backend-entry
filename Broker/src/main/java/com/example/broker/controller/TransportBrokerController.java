@@ -48,8 +48,6 @@ public class TransportBrokerController {
         }
         return 0; // Indicate success
     }
-    /*
-     * two components here, may need 2 applications
-     * */
+
 }
 
