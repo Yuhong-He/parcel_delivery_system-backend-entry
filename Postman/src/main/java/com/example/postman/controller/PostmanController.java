@@ -5,6 +5,7 @@ import com.example.postman.dto.ParcelTrack;
 import com.example.postman.message.MQ;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
@@ -26,6 +27,15 @@ public class PostmanController {
 
     @Value("${database.address}")
     private String database = "";
+
+    @ApiResponse(responseCode = "200", description = "Success")
+    @Operation(summary = "Access via web browser", description = "Allows anyone get the service introduction via root path.")
+    @GetMapping("/")
+    public String get() {
+        return "<h2>This is the Postman System in UCD Parcel Delivery System.</h2>" +
+                "<h2>Swagger API Document: <a href='/swagger-ui/index.html'>/swagger-ui/index.html</a>.</h2>" +
+                "<h2>For more information, please refer: <a href='https://github.com/Yuhong-He/ucd_parcel_backend/tree/main/Postman'>GitHub page</a>.</h2>";
+    }
 
     @Operation(description = "Get all letters for a postman")
     @GetMapping(value = "/getLetters")

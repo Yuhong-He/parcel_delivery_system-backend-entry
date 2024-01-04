@@ -3,6 +3,7 @@ package com.example.broker.controller;
 import com.example.broker.entity.Parcel;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import org.springframework.web.bind.annotation.*;
 import akka.actor.ActorRef;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +18,15 @@ public class TransportBrokerController {
     public TransportBrokerController(ActorRef letterTransportationActor, ActorRef mervilleTransportationActor) {
         this.letterTransportationActor = letterTransportationActor;
         this.mervilleTransportationActor = mervilleTransportationActor;
+    }
+
+    @ApiResponse(responseCode = "200", description = "Success")
+    @Operation(summary = "Access via web browser", description = "Allows anyone get the service introduction via root path.")
+    @GetMapping("/")
+    public String get() {
+        return "<h2>This is the Broker System in UCD Parcel Delivery System.</h2>" +
+                "<h2>Swagger API Document: <a href='/swagger-ui/index.html'>/swagger-ui/index.html</a>.</h2>" +
+                "<h2>For more information, please refer: <a href='https://github.com/Yuhong-He/ucd_parcel_backend/tree/main/Broker'>GitHub page</a>.</h2>";
     }
 
     @Operation(summary = "dispatch a single parcel and send a notification of new letters to receivers")
