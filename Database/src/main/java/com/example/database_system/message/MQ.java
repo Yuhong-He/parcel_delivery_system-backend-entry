@@ -3,7 +3,10 @@ package com.example.database_system.message;
 import com.alibaba.fastjson2.JSON;
 import com.example.database_system.MongoDB.Parcel;
 import com.example.database_system.MongoDB.ParcelTrack;
-import com.rabbitmq.client.*;
+import com.rabbitmq.client.Channel;
+import com.rabbitmq.client.Connection;
+import com.rabbitmq.client.ConnectionFactory;
+import com.rabbitmq.client.DeliverCallback;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +26,7 @@ public class MQ implements ApplicationRunner {
     private static Boolean durable = false;
     private static Boolean autoAck = true;
 
+    private static Connection connection;
     @Resource
     private MongoTemplate mongoTemplate;
 
@@ -36,15 +40,10 @@ public class MQ implements ApplicationRunner {
         autoAck = b2;
     }
 
-    public static void sendToDatabase(Parcel parcel) throws Exception {
-        String message = JSON.toJSONString(parcel);
-        establishConnection().basicPublish("", "Database", MessageProperties.PERSISTENT_TEXT_PLAIN, message.getBytes());
-        log.info("Sending Log: " + message + " to Log System...");
-    }
 
     public static void consumePost(DeliverCallback callBack) throws Exception {
         Channel channel = establishConnection();
-        channel.basicConsume("Database", autoAck, callBack, consumerTag -> {
+        channel.basicConsume("Parcel", autoAck, callBack, consumerTag -> {
         });
     }
 
@@ -52,9 +51,9 @@ public class MQ implements ApplicationRunner {
         log.info("Connecting to rabbitMQServer:" + address + " ...");
         ConnectionFactory factory = new ConnectionFactory();
         factory.setUri(address);
-        Connection connection = factory.newConnection();
+        connection = factory.newConnection();
         Channel channel = connection.createChannel();
-        channel.queueDeclare("Database", durable, false, false, null);
+        channel.queueDeclare("Parcel", durable, false, false, null);
         return channel;
     }
 
@@ -62,9 +61,10 @@ public class MQ implements ApplicationRunner {
     public void run(ApplicationArguments args) {
         new Thread(() -> {
             // MOM consumes Post requests
+            System.out.println("Bounding consume methods...");
             try {
-                MQ.consumePost((consumerTag, delivery) -> {
-                    log.info("Received new post ");
+                consumePost((consumerTag, delivery) -> {
+                    System.out.println("Received new post ");
                     Parcel message = JSON.parseObject(delivery.getBody(), Parcel.class);
                     newParcelTrack(message);
                 });
@@ -72,8 +72,8 @@ public class MQ implements ApplicationRunner {
                 log.info("MQ exception:" + e);
                 e.printStackTrace();
             }
+            System.out.println("Consuming  Thread running...");
         }).start();
-
     }
 
     private void newParcelTrack(Parcel parcel) {
@@ -81,7 +81,8 @@ public class MQ implements ApplicationRunner {
             log.info("Adding Parceltrack" + parcelTrack);
         }
         Query query = new Query(Criteria.where("_id").is(parcel.getId()));
-        Update update = new Update().push("tracks", parcel.getTracks());
+        System.out.println(parcel.getTracks().get(0));
+        Update update = new Update().push("tracks", parcel.getTracks().get(0));
         mongoTemplate.updateFirst(query, update, Parcel.class);
         log.info("Parceltrack added successfully");
     }
