@@ -1,4 +1,4 @@
-package com.example.database_system.MongoDB;
+package com.example.merville.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
@@ -21,7 +21,7 @@ public class ParcelTrack {
 
     @NotNull
     @Schema(description = "Assigned to Merville Room?", example = "true")
-    private boolean merville_room;
+    private Boolean merville_room;
 
     @NotNull
     @Schema(description = "User ID who create this Track", example = "4")
