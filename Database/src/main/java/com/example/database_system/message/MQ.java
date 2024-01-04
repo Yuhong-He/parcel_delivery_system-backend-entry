@@ -45,6 +45,7 @@ public class MQ implements ApplicationRunner {
         Channel channel = establishConnection();
         channel.basicConsume("Parcel", autoAck, callBack, consumerTag -> {
         });
+        channel.close();
         connection.close();
     }
 
