@@ -49,7 +49,7 @@ public class ReceiverController {
     @PostMapping("/confirmed")
     public boolean confirmed(@RequestParam int receiverID, String uuid) {
         Parcel parcel = restTemplate.getForObject(database + "/parcel/getParcelWithId/{id}", Parcel.class, uuid);
-        if(parcel != null){
+        if (parcel != null && receiverID == parcel.getStudent()){
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
             String formattedDateTime = LocalDateTime.now().format(formatter);
             parcel.setTracks(List.of(new ParcelTrack("Receiver Confirmed the address", receiverID, formattedDateTime)));

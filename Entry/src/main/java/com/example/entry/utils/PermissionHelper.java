@@ -27,7 +27,7 @@ public class PermissionHelper {
 
     public static String[] postman() {
         return new String[]{
-
+            "/parcel/deliver"
         };
     }
 
