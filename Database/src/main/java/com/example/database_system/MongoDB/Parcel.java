@@ -1,6 +1,5 @@
 package com.example.database_system.MongoDB;
 
-import com.example.database_system.dto.ParcelInfo;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
@@ -9,7 +8,6 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.MongoId;
 
 import java.util.List;
-import java.util.UUID;
 
 @Data
 @NoArgsConstructor
@@ -42,24 +40,4 @@ public class Parcel {
     @Schema(description = "Parcel Tracks", example = "{}, {}, {}")
     private List<ParcelTrack> tracks;
 
-    public Parcel(ParcelInfo data, List<ParcelTrack> tracks) {
-        this.id = UUID.randomUUID().toString();
-        this.type = data.getType();
-        this.address1 = data.getAddress1();
-        this.address2 = data.getAddress2();
-        this.student = data.getStudent();
-        this.tracks = tracks;
-    }
-
-    @Override
-    public String toString() {
-        return "Parcel{" +
-                "id='" + id + '\'' +
-                ", type=" + type +
-                ", address1='" + address1 + '\'' +
-                ", address2='" + address2 + '\'' +
-                ", student=" + student +
-                ", tracks=" + tracks +
-                '}';
-    }
 }

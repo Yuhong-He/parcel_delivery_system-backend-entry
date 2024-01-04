@@ -42,14 +42,6 @@ public class ParcelController {
         return 0;
     }
 
-    @Operation(description = "update a parcelTrack")
-    @PutMapping("/updateTrack")
-    public int updateTrack(
-            @Parameter(description = "updated ParcelTrack with Parcel ID") @RequestBody ParcelTrackWithParcelID parcelTrackWithParcelID) {
-        // implemented using mom
-        return 0;
-    }
-
     @Operation(description = "get parcels of a receiver")
     @GetMapping(value = "/getReceiverParcel")
     public CustomPage getReceiverParcel(@Parameter(description = "User's ID") @RequestParam int receiverId, @RequestParam int pageNo) {
@@ -137,6 +129,48 @@ public class ParcelController {
         LimitOperation limitOperation = limit(size);
 
         Criteria criteria = Criteria.where("tracks.postman").is(postmanId);
+        MatchOperation matchOperation = match(criteria);
+        AggregationOperation unwind = Aggregation.unwind("tracks");
+        AggregationOperation sort = Aggregation.sort(Sort.Direction.DESC, "tracks.create_at");
+        AggregationOperation group = Aggregation.group("_id")
+                .first("type").as("type")
+                .first("address1").as("address1")
+                .first("address2").as("address2")
+                .first("student").as("student")
+                .first("tracks.description").as("lastUpdateDesc")
+                .first("tracks.create_at").as("lastUpdateAt");
+        AggregationOperation secondSort = Aggregation.sort(Sort.Direction.DESC, "lastUpdateAt");
+
+        Aggregation aggregation = newAggregation(matchOperation, unwind, sort, group, secondSort, skipOperation, limitOperation);
+
+        AggregationResults<ParcelDisplayForStaff> results = mongoTemplate.aggregate(aggregation, "parcel", ParcelDisplayForStaff.class);
+        List<ParcelDisplayForStaff> parcels = results.getMappedResults();
+
+        List<ParcelWithStudentInfo> newList = new ArrayList<>();
+        for(ParcelDisplayForStaff p : parcels) {
+            User student = userService.getStudentById(p.getStudent());
+            ParcelWithStudentInfo parcelWithStudentInfo = new ParcelWithStudentInfo(
+                    p.getId(), new StudentInfo(student.getUsername(), student.getEmail()),
+                    p.getType(), p.getAddress1(), p.getAddress2(), p.getLastUpdateDesc(), p.getLastUpdateAt());
+            newList.add(parcelWithStudentInfo);
+        }
+
+        final Query query = new Query(criteria);
+        long total = mongoTemplate.count(query, Parcel.class);
+        long pages = (long) Math.ceil((double) total / size);
+
+        return new CustomPage(newList, (int) total, size, pageNo, pages);
+    }
+
+    @Operation(description = "Get all parcels for Merville Room staff")
+    @GetMapping(value = "/getMervilleRoomParcels")
+    public CustomPage getMervilleRoomParcels(@RequestParam int pageNo) {
+        int size = 10;
+        int skip = (pageNo - 1) * size;
+        SkipOperation skipOperation = skip(skip);
+        LimitOperation limitOperation = limit(size);
+
+        Criteria criteria = Criteria.where("tracks.merville_room").is(true);
         MatchOperation matchOperation = match(criteria);
         AggregationOperation unwind = Aggregation.unwind("tracks");
         AggregationOperation sort = Aggregation.sort(Sort.Direction.DESC, "tracks.create_at");
