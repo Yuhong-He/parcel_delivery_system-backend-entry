@@ -5,6 +5,8 @@ import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
+import java.util.List;
+
 @Data
 @AllArgsConstructor
 @Schema(description = "Custom Pagination Data")
@@ -12,7 +14,7 @@ public class CustomPage {
 
     @NotNull
     @Schema(description = "Pagination Records", example = "[{},{},{}]")
-    private Object records;
+    private List<Parcel> records;
 
     @NotNull
     @Schema(description = "Number of Records", example = "20")
