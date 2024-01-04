@@ -38,6 +38,7 @@ public class ParcelController {
     @PostMapping(value = "/newParcel")
     public int newParcel(@Parameter(description = "an Parcel Object") @RequestBody Parcel parcel) {
         // implemented using mom
+        System.out.println(parcel+"received, saving it...");
         parcelRepository.save(parcel);
         return 0;
     }

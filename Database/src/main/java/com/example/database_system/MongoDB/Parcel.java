@@ -39,7 +39,7 @@ public class Parcel {
     private int student;
 
     @NotNull
-    @Schema(description = "Parcel Tracks", example = "{}, {}, {}")
+    @Schema(description = "Parcel Tracks", example = "[{}, {}, {}]")
     private List<ParcelTrack> tracks;
 
     public Parcel(ParcelInfo data, List<ParcelTrack> tracks) {

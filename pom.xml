@@ -9,5 +9,8 @@
         <module>Database</module>
         <module>Postman</module>
         <module>Receiver</module>
+        <module>Broker</module>
+        <module>Estate</module>
+        <module>Entry</module>
     </modules>
 </project>

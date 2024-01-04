@@ -1,12 +1,13 @@
 package com.example.broker.controller;
 
-import com.example.broker.entity.Parcel;
+
+import akka.actor.ActorRef;
+import com.example.broker.dto.Parcel;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import org.springframework.web.bind.annotation.*;
-import akka.actor.ActorRef;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/")
