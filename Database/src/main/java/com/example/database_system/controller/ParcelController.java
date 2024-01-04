@@ -10,8 +10,6 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.annotation.Resource;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.*;
@@ -104,11 +102,11 @@ public class ParcelController {
 
         Aggregation aggregation = newAggregation(unwind, sort, group, secondSort, skipOperation, limitOperation);
 
-        AggregationResults<ParcelDisplayForEstate> results = mongoTemplate.aggregate(aggregation, "parcel", ParcelDisplayForEstate.class);
-        List<ParcelDisplayForEstate> parcels = results.getMappedResults();
+        AggregationResults<ParcelDisplayForStaff> results = mongoTemplate.aggregate(aggregation, "parcel", ParcelDisplayForStaff.class);
+        List<ParcelDisplayForStaff> parcels = results.getMappedResults();
 
         List<ParcelWithStudentInfo> newList = new ArrayList<>();
-        for(ParcelDisplayForEstate p : parcels) {
+        for(ParcelDisplayForStaff p : parcels) {
             User student = userService.getStudentById(p.getStudent());
             ParcelWithStudentInfo parcelWithStudentInfo = new ParcelWithStudentInfo(
                     p.getId(), new StudentInfo(student.getUsername(), student.getEmail()),
@@ -132,10 +130,44 @@ public class ParcelController {
 
     @Operation(description = "Get all letters for a postman")
     @GetMapping(value = "/getLetters")
-    public CustomPage getLetters(@RequestParam int pageNumber) {
-        Page<Parcel> parcels=  parcelRepository.findAllByType(3, PageRequest.of(pageNumber, 10));
-        return new CustomPage(parcels.getContent(), parcels.getTotalElements(),10,parcels.getNumber(), parcels.getTotalPages());
+    public CustomPage getLetters(@Parameter(description = "Postman's ID") @RequestParam int postmanId, @RequestParam int pageNo) {
+        int size = 10;
+        int skip = (pageNo - 1) * size;
+        SkipOperation skipOperation = skip(skip);
+        LimitOperation limitOperation = limit(size);
 
+        Criteria criteria = Criteria.where("tracks.postman").is(postmanId);
+        MatchOperation matchOperation = match(criteria);
+        AggregationOperation unwind = Aggregation.unwind("tracks");
+        AggregationOperation sort = Aggregation.sort(Sort.Direction.DESC, "tracks.create_at");
+        AggregationOperation group = Aggregation.group("_id")
+                .first("type").as("type")
+                .first("address1").as("address1")
+                .first("address2").as("address2")
+                .first("student").as("student")
+                .first("tracks.description").as("lastUpdateDesc")
+                .first("tracks.create_at").as("lastUpdateAt");
+        AggregationOperation secondSort = Aggregation.sort(Sort.Direction.DESC, "lastUpdateAt");
+
+        Aggregation aggregation = newAggregation(matchOperation, unwind, sort, group, secondSort, skipOperation, limitOperation);
+
+        AggregationResults<ParcelDisplayForStaff> results = mongoTemplate.aggregate(aggregation, "parcel", ParcelDisplayForStaff.class);
+        List<ParcelDisplayForStaff> parcels = results.getMappedResults();
+
+        List<ParcelWithStudentInfo> newList = new ArrayList<>();
+        for(ParcelDisplayForStaff p : parcels) {
+            User student = userService.getStudentById(p.getStudent());
+            ParcelWithStudentInfo parcelWithStudentInfo = new ParcelWithStudentInfo(
+                    p.getId(), new StudentInfo(student.getUsername(), student.getEmail()),
+                    p.getType(), p.getAddress1(), p.getAddress2(), p.getLastUpdateDesc(), p.getLastUpdateAt());
+            newList.add(parcelWithStudentInfo);
+        }
+
+        final Query query = new Query(criteria);
+        long total = mongoTemplate.count(query, Parcel.class);
+        long pages = (long) Math.ceil((double) total / size);
+
+        return new CustomPage(newList, (int) total, size, pageNo, pages);
     }
 
 }

@@ -38,6 +38,9 @@ public class ParcelController {
     @Value("${address.receiver}")
     private String receiverUrl = "";
 
+    @Value("${address.postman}")
+    private String postmanUrl = "";
+
     @ApiResponse(responseCode = "200", description = "Success",
             content = {@Content(mediaType = "application/json",
                     schema = @Schema(implementation = Result.class))})
@@ -60,6 +63,11 @@ public class ParcelController {
             RestTemplate template = new RestTemplate();
             ResponseEntity<String> responseEntity = template.getForEntity(estateUrl + "/list?page=" + pageNo, String.class);
             return getObjectResult(responseEntity);
+        } else if (currentUser.getType() == UserTypeEnum.Postman.getVal()) {
+            RestTemplate template = new RestTemplate();
+            ResponseEntity<String> responseEntity = template.getForEntity(postmanUrl + "/getLetters?postmanId="  + BaseContext.getCurrentId()
+                    + "&pageNo=" + pageNo, String.class);
+            return getObjectResult(responseEntity);
         } else if (currentUser.getType() == UserTypeEnum.Student.getVal()) {
             RestTemplate template = new RestTemplate();
             ResponseEntity<String> responseEntity = template.getForEntity(receiverUrl + "/getParcelList?receiverID=" + BaseContext.getCurrentId()
@@ -79,5 +87,16 @@ public class ParcelController {
             log.error("Cast CustomPage error: " + e.getMessage());
             return Result.error(e.getMessage(), ResultCodeEnum.FAIL);
         }
+    }
+
+    @ApiResponse(responseCode = "200", description = "Success",
+            content = {@Content(mediaType = "application/json",
+                    schema = @Schema(implementation = Result.class))})
+    @Operation(summary = "Postman deliver a parcel", description = "Allowed Postman deliver a parcel.")
+    @PostMapping("/deliver")
+    public Result<Object> deliver(@RequestParam String parcelId) {
+        RestTemplate template = new RestTemplate();
+        template.postForEntity(postmanUrl + "/deliver/" + BaseContext.getCurrentId().intValue() + "?parcelId=" + parcelId, null, String.class);
+        return Result.ok();
     }
 }

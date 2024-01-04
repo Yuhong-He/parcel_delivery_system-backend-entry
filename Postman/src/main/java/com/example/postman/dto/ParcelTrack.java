@@ -30,20 +30,4 @@ public class ParcelTrack {
     @NotNull
     @Schema(description = "Track Created Time", example = "2023-12-17 14:23:17")
     private String create_at;
-
-
-    public ParcelTrack(String description, Integer create_by, String create_at) {
-        this.description = description;
-        this.postman = -1;
-        this.merville_room = false;
-        this.create_by = create_by;
-        this.create_at = create_at;
-    }
-    public ParcelTrack(ParcelTrackWithParcelID parcelTrackWithParcelID) {
-        this.description = parcelTrackWithParcelID.getDescription();
-        this.postman = parcelTrackWithParcelID.getPostman();
-        this.merville_room = parcelTrackWithParcelID.isMerville_room();
-        this.create_at = parcelTrackWithParcelID.getCreate_at();
-        this.create_by = parcelTrackWithParcelID.getCreate_by();
-    }
 }

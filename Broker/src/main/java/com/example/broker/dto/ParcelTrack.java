@@ -15,7 +15,6 @@ public class ParcelTrack {
     @Schema(description = "Track Description", example = "Estate Service created parcel label")
     private String description;
 
-
     @NotNull
     @Schema(description = "User ID who create this Track", example = "4")
     private Integer create_by;

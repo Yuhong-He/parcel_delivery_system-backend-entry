@@ -35,8 +35,8 @@ public class LetterTransportationActor extends AbstractActor {
     private void updateParcelTrack(com.example.broker.dto.Parcel parcel) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         String formattedDateTime = LocalDateTime.now().format(formatter);
-        Integer createBy = 1; // Not sure about User's ID
-        ParcelTrack newTrack = new ParcelTrack("Broker Notify receiver", createBy, formattedDateTime);
+        Integer createBy = -1; // Not sure about User's ID
+        ParcelTrack newTrack = new ParcelTrack("Broker notify receiver", createBy, formattedDateTime);
         parcel.addTrack(newTrack);
 
         try {
