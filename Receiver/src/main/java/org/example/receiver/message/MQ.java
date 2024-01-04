@@ -29,10 +29,8 @@ public class MQ {
 
     public static void sendToDatabase(Parcel parcel) throws Exception {
         String message = JSON.toJSONString(parcel);
-        establishConnection().basicPublish("", "Database", MessageProperties.PERSISTENT_TEXT_PLAIN, message.getBytes());
-        System.out.println("Sending Log: " + message + " to Log System...");
-        connection.close();
-    }
+        establishConnection().basicPublish("", "Parcel", MessageProperties.PERSISTENT_TEXT_PLAIN, message.getBytes());
+        System.out.println("Sending Log: " + message + " to Parcel System...");}
 
     public static Channel establishConnection() throws Exception {
         System.out.println("Connecting to rabbitMQServer:" + address + " ...");
@@ -40,7 +38,7 @@ public class MQ {
         factory.setUri(address);
         connection = factory.newConnection();
         Channel channel = connection.createChannel();
-        channel.queueDeclare("Database", durable, false, false, null);
+        channel.queueDeclare("Parcel", durable, false, false, null);
         return channel;
     }
 

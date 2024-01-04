@@ -18,8 +18,6 @@ public class MQ {
     private static Boolean durable = false;
     private static Boolean autoAck = true;
 
-    private static Connection connection;
-
     @Autowired
     private void setStaticFields(
             @Value("${MQ.address}") String s,
@@ -32,18 +30,17 @@ public class MQ {
 
     public static void sendToDatabase(Parcel parcel) throws Exception {
         String message = JSON.toJSONString(parcel);
-        establishConnection().basicPublish("", "Database", MessageProperties.PERSISTENT_TEXT_PLAIN, message.getBytes());
+        establishConnection().basicPublish("", "Parcel", MessageProperties.PERSISTENT_TEXT_PLAIN, message.getBytes());
         log.info("Sending Log: " + message + " to Log System...");
-        connection.close();
     }
 
     public static Channel establishConnection() throws Exception {
         log.info("Connecting to rabbitMQServer:"+address+" ...");
         ConnectionFactory factory = new ConnectionFactory();
         factory.setUri(address);
-        connection = factory.newConnection();
+        Connection connection = factory.newConnection();
         Channel channel = connection.createChannel();
-        channel.queueDeclare("Database", durable, false, false, null);
+        channel.queueDeclare("Parcel", durable, false, false, null);
         return channel;
     }
 

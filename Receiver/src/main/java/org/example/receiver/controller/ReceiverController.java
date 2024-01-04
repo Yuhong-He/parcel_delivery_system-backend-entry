@@ -13,6 +13,7 @@ import org.springframework.web.client.RestTemplate;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 @Slf4j
 @RestController
@@ -52,7 +53,9 @@ public class ReceiverController {
         if(parcel != null){
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
             String formattedDateTime = LocalDateTime.now().format(formatter);
-            parcel.setTracks(List.of(new ParcelTrack("Receiver Confirmed the address", receiverID, formattedDateTime)));
+            List<ParcelTrack> newPT = new ArrayList<>();
+            newPT.add(new ParcelTrack("Receiver Confirmed the address", receiverID, formattedDateTime));
+            parcel.setTracks(newPT);
             try {
                 MQ.sendToDatabase(parcel);
             } catch (Exception e) {
