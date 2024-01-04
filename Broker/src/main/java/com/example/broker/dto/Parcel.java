@@ -4,9 +4,8 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
 import java.util.ArrayList;
-
-
 import java.util.List;
 
 @Data
@@ -35,7 +34,7 @@ public class Parcel {
     private int student;
 
     @NotNull
-    @Schema(description = "Parcel Tracks", example = "{}, {}, {}")
+    @Schema(description = "Parcel Tracks", example = "[{}, {}, {}]")
     private List<ParcelTrack> tracks;
 
     public void addTrack(ParcelTrack track) {

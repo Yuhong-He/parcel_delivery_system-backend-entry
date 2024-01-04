@@ -2,7 +2,10 @@ package com.example.broker.message;
 
 import com.alibaba.fastjson2.JSON;
 import com.example.broker.dto.Parcel;
-import com.rabbitmq.client.*;
+import com.rabbitmq.client.Channel;
+import com.rabbitmq.client.Connection;
+import com.rabbitmq.client.ConnectionFactory;
+import com.rabbitmq.client.MessageProperties;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -28,7 +31,7 @@ public class MQ {
 
     public static void sendToDatabase(Parcel parcel) throws Exception {
         String message = JSON.toJSONString(parcel);
-        establishConnection().basicPublish("", "Database", MessageProperties.PERSISTENT_TEXT_PLAIN, message.getBytes());
+        establishConnection().basicPublish("", "Parcel", MessageProperties.PERSISTENT_TEXT_PLAIN, message.getBytes());
         log.info("Sending Log: " + message + " to Log System...");
     }
 
@@ -38,7 +41,7 @@ public class MQ {
         factory.setUri(address);
         Connection connection = factory.newConnection();
         Channel channel = connection.createChannel();
-        channel.queueDeclare("Database", durable, false, false, null);
+        channel.queueDeclare("Parcel", durable, false, false, null);
         return channel;
     }
 

@@ -1,13 +1,14 @@
 package com.example.broker.actors;
 
 import akka.actor.AbstractActor;
-import com.example.broker.dto.ParcelTrack;
 import com.example.broker.dto.Parcel;
+import com.example.broker.dto.ParcelTrack;
 import com.example.broker.message.MQ;
 import lombok.extern.slf4j.Slf4j;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 
 @Slf4j
 public class MervilleTransportationActor extends AbstractActor {
@@ -30,7 +31,7 @@ public class MervilleTransportationActor extends AbstractActor {
         String formattedDateTime = LocalDateTime.now().format(formatter);
         Integer createBy = -1;
         ParcelTrack newTrack = new ParcelTrack("Broker send parcel to Merville Room", createBy, formattedDateTime);
-        parcel.addTrack(newTrack);
+        parcel.setTracks(List.of(newTrack));
 
         try {
             MQ.sendToDatabase(parcel);

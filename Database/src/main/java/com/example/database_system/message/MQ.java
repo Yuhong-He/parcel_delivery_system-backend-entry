@@ -45,6 +45,8 @@ public class MQ implements ApplicationRunner {
         Channel channel = establishConnection();
         channel.basicConsume("Parcel", autoAck, callBack, consumerTag -> {
         });
+        channel.close();
+        connection.close();
     }
 
     public static Channel establishConnection() throws Exception {
