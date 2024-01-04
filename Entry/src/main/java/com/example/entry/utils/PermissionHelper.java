@@ -4,24 +4,25 @@ public class PermissionHelper {
 
     public static String[] unregistered() {
         return new String[]{
-                "/user/login",
-                "/user/sendRegisterEmail",
-                "/user/register",
-                "/",
-                "/api-docs",
-                "/swagger-ui/*"
+            "/user/login",
+            "/user/sendRegisterEmail",
+            "/user/register",
+            "/",
+            "/api-docs",
+            "/swagger-ui/*"
         };
     }
 
     public static String[] anyRegistered() {
         return new String[]{
-                "/parcel/list"
+            "/parcel/list",
+            "/parcel/tracks"
         };
     }
 
     public static String[] student() {
         return new String[]{
-
+            "/parcel/confirmAddress"
         };
     }
 

@@ -44,6 +44,16 @@ public class EstateController {
     }
 
     @ApiResponse(responseCode = "200", description = "Success")
+    @Operation(summary = "Get parcel tracks", description = "Allowed postman gets one parcel tracks")
+    @GetMapping("/getParcelTracks")
+    public List<ParcelTrack> getParcelTracks(@RequestParam String parcelId) {
+        Parcel parcel = restTemplate.getForObject(database + "/parcel/getParcelWithId/{id}", Parcel.class, parcelId);
+        if (parcel == null)
+            return null;
+        return parcel.getTracks();
+    }
+
+    @ApiResponse(responseCode = "200", description = "Success")
     @Operation(summary = "Create a parcel", description = "Allowed Estate Service Staff create a parcel.")
     @PostMapping("/createParcel")
     public void createParcel(@RequestBody ParcelInfo data,
