@@ -36,7 +36,7 @@ public class ParcelController {
     @Operation(description = "get parcels of a receiver", responses = {
             @ApiResponse(description = "a JSONised Slice<Page> object") })
     @GetMapping(value = "/getReceiverParcel")
-    public Page<Parcel> getReceiverParcel(@Parameter(description = "user's ID") @RequestParam int receiverId,
+    public Page<Parcel> getReceiverParcel(@Parameter(description = "receiver's ID") @RequestParam int receiverId,
             @RequestParam int pageNumber) {
         return parcelRepository.findAllByStudent(receiverId, PageRequest.of(pageNumber,10));
     }
@@ -44,7 +44,7 @@ public class ParcelController {
     @Operation(description = "get a specific parcel", responses = {
             @ApiResponse(description = "a Parcel Object") })
     @GetMapping(value = "/getParcelWithId/{id}")
-    public Parcel getParcelWithId(@Parameter(description = "user's ID") @PathVariable String id){
+    public Parcel getParcelWithId(@Parameter(description = "parcel's ID") @PathVariable String id){
         return parcelRepository.findById(id).orElse(null);
     }
     @Operation(description = "Get all letters for a postman")

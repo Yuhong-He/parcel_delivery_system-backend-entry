@@ -23,6 +23,7 @@ public class MQ implements ApplicationRunner{
     private static Boolean durable = false;
     private static Boolean autoAck = true;
 
+    private static Connection connection;
     @Resource
     private MongoTemplate mongoTemplate;
 
@@ -40,19 +41,21 @@ public class MQ implements ApplicationRunner{
         String message = JSON.toJSONString(parcel);
         establishConnection().basicPublish("", "Database", MessageProperties.PERSISTENT_TEXT_PLAIN, message.getBytes());
         log.info("Sending Log: " + message + " to Log System...");
+        connection.close();
     }
 
     public static void consumePost(DeliverCallback callBack) throws Exception {
         Channel channel = establishConnection();
         channel.basicConsume("Database", autoAck, callBack, consumerTag -> {
         });
+        connection.close();
     }
 
     public static Channel establishConnection() throws Exception {
         log.info("Connecting to rabbitMQServer:" + address + " ...");
         ConnectionFactory factory = new ConnectionFactory();
         factory.setUri(address);
-        Connection connection = factory.newConnection();
+        connection = factory.newConnection();
         Channel channel = connection.createChannel();
         channel.queueDeclare("Database", durable, false, false, null);
         return channel;

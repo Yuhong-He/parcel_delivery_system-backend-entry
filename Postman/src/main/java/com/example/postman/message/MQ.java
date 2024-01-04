@@ -2,7 +2,10 @@ package com.example.postman.message;
 
 import com.alibaba.fastjson2.JSON;
 import com.example.postman.dto.Parcel;
-import com.rabbitmq.client.*;
+import com.rabbitmq.client.Channel;
+import com.rabbitmq.client.Connection;
+import com.rabbitmq.client.ConnectionFactory;
+import com.rabbitmq.client.MessageProperties;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -15,6 +18,7 @@ public class MQ {
     private static Boolean durable = false;
     private static Boolean autoAck = true;
 
+    private static Connection connection;
 
     @Autowired
     private void setStaticFields(
@@ -30,13 +34,14 @@ public class MQ {
         String message = JSON.toJSONString(parcel);
         establishConnection().basicPublish("", "Database", MessageProperties.PERSISTENT_TEXT_PLAIN, message.getBytes());
         log.info("Sending Log: " + message + " to Log System...");
+        connection.close();
     }
 
     public static Channel establishConnection() throws Exception {
         log.info("Connecting to rabbitMQServer:"+address+" ...");
         ConnectionFactory factory = new ConnectionFactory();
         factory.setUri(address);
-        Connection connection = factory.newConnection();
+        connection = factory.newConnection();
         Channel channel = connection.createChannel();
         channel.queueDeclare("Database", durable, false, false, null);
         return channel;

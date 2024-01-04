@@ -38,12 +38,11 @@ public class ReceiverController {
     @ApiResponse(responseCode = "200", description = "Success")
     @Operation(summary = "Get a parcelList", description = "Allowed student gets their parcels")
     @GetMapping("/getParcelList")
-    public CustomPage getParcelList(@RequestParam int receiverID, int pageNo,int pagesize) {
+    public CustomPage getParcelList(@RequestParam int receiverID, int pageNo) {
         PageImpl<Parcel> parcels = restTemplate.getForObject(database+"/parcel/getReceiverParcel?receiverId="+receiverID+
-                "&pageNumber="+pageNo+
-                "&pageSize="+pagesize, PageImpl.class);
+                "&pageNumber="+pageNo, PageImpl.class);
 
-        return new CustomPage(parcels, parcels.getTotalElements(), pagesize, pageNo, parcels.getTotalPages());
+        return new CustomPage(parcels, parcels.getTotalElements(), 10, pageNo, parcels.getTotalPages());
     }
 
     @ApiResponse(responseCode = "200", description = "Success")
@@ -56,7 +55,7 @@ public class ReceiverController {
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
             String formattedDateTime = LocalDateTime.now().format(formatter);
             parcel.setTracks(List.of(new ParcelTrack("Receiver Confirmed the address", receiverID, formattedDateTime)));
-//            Parcel parcel1 = new Parcel(uuid, 1, "", "", receiverID, List.of(new ParcelTrack("Receiver Confirmed the address", receiverID, formattedDateTime)));
+            System.out.println(parcel);
             try {
                 MQ.sendToDatabase(parcel);
             } catch (Exception e) {
@@ -64,7 +63,6 @@ public class ReceiverController {
             }
             return true;
         }
-
         return false;
     }
 }
