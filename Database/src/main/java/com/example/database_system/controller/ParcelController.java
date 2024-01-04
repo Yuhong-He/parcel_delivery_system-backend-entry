@@ -88,8 +88,10 @@ public class ParcelController {
     }
     @Operation(description = "Get all letters for a postman")
     @GetMapping(value = "/getLetters")
-    public Page<Parcel> getLetters(@RequestParam int pageNumber) {
-        return parcelRepository.findAllByType(3, PageRequest.of(pageNumber, 10));
+    public CustomPage getLetters(@RequestParam int pageNumber) {
+        Page<Parcel> parcels=  parcelRepository.findAllByType(3, PageRequest.of(pageNumber, 10));
+        return new CustomPage(parcels.getContent(), parcels.getTotalElements(),10,parcels.getNumber(), parcels.getTotalPages());
+
     }
 
 }

@@ -1,5 +1,6 @@
 package com.example.postman.controller;
 
+import com.example.postman.dto.CustomPage;
 import com.example.postman.dto.Parcel;
 import com.example.postman.dto.ParcelTrack;
 import com.example.postman.message.MQ;
@@ -9,7 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
-import org.springframework.data.domain.Page;
+
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -32,9 +33,9 @@ public class PostmanController {
     public List<Parcel> getLetters(@Parameter(description = "postman's id") @RequestParam int id) {
         List<Parcel> result = new ArrayList<>();
         String endPoint = "/parcel/getLetters?pageNumber=0&pageSize=5";
-        Page<Parcel> parcels = restTemplate.getForObject(database + endPoint, Page.class);
+        CustomPage parcels = restTemplate.getForObject(database + endPoint, CustomPage.class);
         assert parcels != null;
-        for (Parcel parcel : parcels) {
+        for (Parcel parcel : (List<Parcel>)parcels.getRecords()) {
             List<ParcelTrack> parcelTracks = parcel.getTracks();
             if (parcelTracks.get(parcelTracks.size() - 1).getPostman() == id)
                 result.add(parcel);
