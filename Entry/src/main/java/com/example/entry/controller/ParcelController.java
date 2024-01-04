@@ -65,21 +65,21 @@ public class ParcelController {
         User currentUser = userService.getUserById(Math.toIntExact(BaseContext.getCurrentId()));
         if (currentUser.getType() == UserTypeEnum.EstateServiceStaff.getVal()) {
             ResponseEntity<String> responseEntity = template.getForEntity(estateUrl + "/list?page=" + pageNo, String.class);
-            return getObjectResult(responseEntity);
+            return castCustomPage(responseEntity);
         } else if (currentUser.getType() == UserTypeEnum.Postman.getVal()) {
             ResponseEntity<String> responseEntity = template.getForEntity(postmanUrl + "/getLetters?postmanId="  + BaseContext.getCurrentId()
                     + "&pageNo=" + pageNo, String.class);
-            return getObjectResult(responseEntity);
+            return castCustomPage(responseEntity);
         } else if (currentUser.getType() == UserTypeEnum.Student.getVal()) {
             ResponseEntity<String> responseEntity = template.getForEntity(receiverUrl + "/getParcelList?receiverID=" + BaseContext.getCurrentId()
                     + "&pageNo=" + pageNo, String.class);
-            return getObjectResult(responseEntity);
+            return castCustomPage(responseEntity);
         } else {
             return Result.error(ResultCodeEnum.NO_PERMISSION);
         }
     }
 
-    private Result<Object> getObjectResult(ResponseEntity<String> responseEntity) {
+    private Result<Object> castCustomPage(ResponseEntity<String> responseEntity) {
         String jsonResponse = responseEntity.getBody();
         ObjectMapper objectMapper = new ObjectMapper();
         try {
@@ -117,20 +117,33 @@ public class ParcelController {
     @GetMapping("/tracks")
     public Result<Object> getParcelTracks(@Parameter(description = "Parcel ID") @RequestParam("parcelId") String parcelId) {
         User currentUser = userService.getUserById(Math.toIntExact(BaseContext.getCurrentId()));
-        if (currentUser.getType() == UserTypeEnum.Student.getVal()) {
+        if (currentUser.getType() == UserTypeEnum.EstateServiceStaff.getVal()) {
+            ResponseEntity<String> responseEntity = template.getForEntity(estateUrl + "/getParcelTracks?parcelId=" + parcelId, String.class);
+            return castParcelTrackList(responseEntity);
+        } else if (currentUser.getType() == UserTypeEnum.Postman.getVal()) {
+            ResponseEntity<String> responseEntity = template.getForEntity(postmanUrl + "/getParcelTracks?postmanId=" + BaseContext.getCurrentId()
+                    + "&parcelId=" + parcelId, String.class);
+            return castParcelTrackList(responseEntity);
+        } else if (currentUser.getType() == UserTypeEnum.Student.getVal()) {
             ResponseEntity<String> responseEntity = template.getForEntity(receiverUrl + "/getParcelTracks?receiverId=" + BaseContext.getCurrentId()
                     + "&parcelId=" + parcelId, String.class);
-            ObjectMapper objectMapper = new ObjectMapper();
-            try {
-                ParcelTrack[] parcelTracksArray = objectMapper.readValue(responseEntity.getBody(), ParcelTrack[].class);
-                List<ParcelTrack> parcelTracksList = List.of(parcelTracksArray);
-                return Result.ok(parcelTracksList);
-            } catch (Exception e) {
-                log.error("Cast List<ParcelTrack> error: " + e.getMessage());
-                return Result.error(e.getMessage(), ResultCodeEnum.FAIL);
-            }
+            return castParcelTrackList(responseEntity);
         } else {
             return Result.error(ResultCodeEnum.NO_PERMISSION);
+        }
+    }
+
+    private Result<Object> castParcelTrackList(ResponseEntity<String> responseEntity) {
+        if (responseEntity.getBody() == null)
+            return Result.error(ResultCodeEnum.NO_PERMISSION);
+        ObjectMapper objectMapper = new ObjectMapper();
+        try {
+            ParcelTrack[] parcelTracksArray = objectMapper.readValue(responseEntity.getBody(), ParcelTrack[].class);
+            List<ParcelTrack> parcelTracksList = List.of(parcelTracksArray);
+            return Result.ok(parcelTracksList);
+        } catch (Exception e) {
+            log.error("Cast List<ParcelTrack> error: " + e.getMessage());
+            return Result.error(e.getMessage(), ResultCodeEnum.FAIL);
         }
     }
 }

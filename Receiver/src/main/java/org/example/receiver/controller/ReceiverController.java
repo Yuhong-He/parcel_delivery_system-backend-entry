@@ -34,9 +34,9 @@ public class ReceiverController {
     }
 
     @ApiResponse(responseCode = "200", description = "Success")
-    @Operation(summary = "Get parcel tracks", description = "Allowed User gets one parcel tracks")
+    @Operation(summary = "Get parcel tracks", description = "Allowed student gets one parcel tracks")
     @GetMapping("/getParcelTracks")
-    public List<ParcelTrack> getHistory(@RequestParam int receiverId, @RequestParam String parcelId) {
+    public List<ParcelTrack> getParcelTracks(@RequestParam int receiverId, @RequestParam String parcelId) {
         Parcel parcel = restTemplate.getForObject(database + "/parcel/getParcelWithId/{id}", Parcel.class, parcelId);
         if (parcel == null || parcel.getStudent() != receiverId)
             return null;

@@ -37,6 +37,21 @@ public class PostmanController {
                 "<h2>For more information, please refer: <a href='https://github.com/Yuhong-He/ucd_parcel_backend/tree/main/Postman'>GitHub page</a>.</h2>";
     }
 
+    @ApiResponse(responseCode = "200", description = "Success")
+    @Operation(summary = "Get parcel tracks", description = "Allowed postman gets one parcel tracks")
+    @GetMapping("/getParcelTracks")
+    public List<ParcelTrack> getParcelTracks(@RequestParam int postmanId, @RequestParam String parcelId) {
+        Parcel parcel = restTemplate.getForObject(database + "/parcel/getParcelWithId/{id}", Parcel.class, parcelId);
+        if (parcel == null)
+            return null;
+        for (ParcelTrack track: parcel.getTracks()) {
+            if (track.getPostman() == postmanId) {
+                return parcel.getTracks();
+            }
+        }
+        return null;
+    }
+
     @Operation(description = "Get all letters for a postman")
     @GetMapping(value = "/getLetters")
     public String getLetters(@Parameter(description = "Postman's ID") @RequestParam int postmanId,
