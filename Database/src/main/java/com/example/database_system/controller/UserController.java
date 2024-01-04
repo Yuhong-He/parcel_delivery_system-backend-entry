@@ -5,6 +5,9 @@ import com.example.database_system.mybatis_service.UserService;
 import jakarta.annotation.Resource;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @RestController
 @RequestMapping("/user")
 public class UserController {
@@ -15,5 +18,15 @@ public class UserController {
     @GetMapping("/getStudentById")
     public User getStudentsById(@RequestParam int id) {
         return userService.getStudentById(id);
+    }
+
+    @GetMapping("/getPostmanIds")
+    public List<Integer> getPostmanIds() {
+        List<User> postmanList = userService.getAllPostman();
+        List<Integer> idList = new ArrayList<>();
+        for (User user: postmanList) {
+            idList.add(user.getId());
+        }
+        return idList;
     }
 }
