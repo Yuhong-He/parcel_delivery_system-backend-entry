@@ -84,7 +84,7 @@ public class MQ implements ApplicationRunner {
             log.info("Adding Parceltrack" + parcelTrack);
         }
         Query query = new Query(Criteria.where("_id").is(parcel.getId()));
-        Update update = new Update().push("tracks", parcel.getTracks());
+        Update update = new Update().push("tracks", parcel.getTracks().get(0));
         mongoTemplate.updateFirst(query, update, Parcel.class);
         log.info("Parceltrack added successfully");
     }
