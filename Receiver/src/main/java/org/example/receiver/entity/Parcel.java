@@ -5,9 +5,6 @@ import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.data.mongodb.core.mapping.DBRef;
-import org.springframework.data.mongodb.core.mapping.Document;
-import org.springframework.data.mongodb.core.mapping.MongoId;
 
 import java.util.List;
 
@@ -15,12 +12,10 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Schema(description = "Parcel Information")
-@Document("parcel")
 public class Parcel {
 
     @NotNull
     @Schema(description = "Parcel ID", example = "9aed31b2-1577-4c9c-9778-f2101fa4cf46")
-    @MongoId
     private String id;
 
     @NotNull
@@ -39,7 +34,6 @@ public class Parcel {
     @Schema(description = "User ID of Student", example = "3")
     private int student;
 
-    @DBRef
     @NotNull
     @Schema(description = "Parcel Tracks", example = "{}, {}, {}")
     private List<ParcelTrack> tracks;
