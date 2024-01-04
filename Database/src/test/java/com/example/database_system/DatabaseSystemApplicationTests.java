@@ -1,7 +1,6 @@
 package com.example.database_system;
 
 import com.example.database_system.MongoDB.Parcel;
-import com.example.database_system.message.MQ;
 import com.example.database_system.mybatis_service.UserService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,7 +28,7 @@ class DatabaseSystemApplicationTests {
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
             String formattedDateTime = currentDateTime.format(formatter);
             Parcel parcel = new Parcel();
-            MQ.sendToDatabase(parcel);
+//            MQ.sendToDatabase(parcel);
 
         } catch (Exception e) {
             System.out.println("Exception:" + e);

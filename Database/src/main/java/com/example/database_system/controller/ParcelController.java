@@ -66,8 +66,8 @@ public class ParcelController {
         AggregationOperation sort = Aggregation.sort(Sort.Direction.DESC, "tracks.create_at");
         AggregationOperation group = Aggregation.group("_id")
                 .first("type").as("type")
-                .last("tracks.description").as("lastUpdateDesc")
-                .last("tracks.create_at").as("lastUpdateAt");
+                .first("tracks.description").as("lastUpdateDesc")
+                .first("tracks.create_at").as("lastUpdateAt");
         AggregationOperation secondSort = Aggregation.sort(Sort.Direction.DESC, "lastUpdateAt");
 
         Aggregation aggregation = newAggregation(matchOperation, unwind, sort, group, secondSort, skipOperation, limitOperation);
@@ -129,10 +129,13 @@ public class ParcelController {
     public Parcel getParcelWithId(@Parameter(description = "user's ID") @PathVariable String id){
         return parcelRepository.findById(id).orElse(null);
     }
+
     @Operation(description = "Get all letters for a postman")
     @GetMapping(value = "/getLetters")
-    public Page<Parcel> getLetters(@RequestParam int pageNumber) {
-        return parcelRepository.findAllByType(3, PageRequest.of(pageNumber, 10));
+    public CustomPage getLetters(@RequestParam int pageNumber) {
+        Page<Parcel> parcels=  parcelRepository.findAllByType(3, PageRequest.of(pageNumber, 10));
+        return new CustomPage(parcels.getContent(), parcels.getTotalElements(),10,parcels.getNumber(), parcels.getTotalPages());
+
     }
 
 }

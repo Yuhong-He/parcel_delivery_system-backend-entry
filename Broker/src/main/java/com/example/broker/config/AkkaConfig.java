@@ -18,12 +18,12 @@ public class AkkaConfig {
 
     @Bean
     public ActorRef letterTransportationActor(ActorSystem actorSystem) {
-        ActorRef mervillTransportationActor = mervillTransportationActor(actorSystem);
-        return actorSystem.actorOf(Props.create(LetterTransportationActor.class, mervillTransportationActor), "letterTransportationActor");
+        ActorRef mervilleTransportationActor = mervilleTransportationActor(actorSystem);
+        return actorSystem.actorOf(Props.create(LetterTransportationActor.class, mervilleTransportationActor), "letterTransportationActor");
     }
 
     @Bean
-    public ActorRef mervillTransportationActor(ActorSystem actorSystem) {
+    public ActorRef mervilleTransportationActor(ActorSystem actorSystem) {
         return actorSystem.actorOf(Props.create(MervilleTransportationActor.class), "mervilleTransportationActor");
     }
 }

@@ -14,14 +14,15 @@ public class LetterTransportationActor extends AbstractActor {
     private final ActorRef mervilleTransportationActor;
 
     @Autowired
-    public LetterTransportationActor(ActorRef mervillTransportationActor) {
-        this.mervilleTransportationActor = mervillTransportationActor;
+    public LetterTransportationActor(ActorRef mervilleTransportationActor) {
+        this.mervilleTransportationActor = mervilleTransportationActor;
     }
 
     @Override
     public Receive createReceive() {
         return receiveBuilder()
                 .match(Parcel.class, parcel -> {
+                    System.out.println("I am in LetterTransportationActor");
                     if (parcel.getType() == 3) {
                         mervilleTransportationActor.tell(parcel, getSelf());
                     }else {

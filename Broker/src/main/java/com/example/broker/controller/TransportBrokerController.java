@@ -14,21 +14,21 @@ public class TransportBrokerController {
     private final ActorRef mervilleTransportationActor;
 
     @Autowired
-    public TransportBrokerController(ActorRef letterTransportationActor, ActorRef mervillTransportationActor) {
+    public TransportBrokerController(ActorRef letterTransportationActor, ActorRef mervilleTransportationActor) {
         this.letterTransportationActor = letterTransportationActor;
-        this.mervilleTransportationActor = mervillTransportationActor;
+        this.mervilleTransportationActor = mervilleTransportationActor;
     }
 
     @Operation(summary = "dispatch a single parcel and send a notification of new letters to receivers")
     @PostMapping("/distribute")
     public int newParcel(@Parameter(description = "A parcel to be dispatched") @RequestBody Parcel parcel) {
         switch(parcel.getType()) {
+            case 1: // Packages
+                mervilleTransportationActor.tell(parcel, ActorRef.noSender());
+                break;
             case 2: // Regular letters
             case 3: // Critical letters
                 letterTransportationActor.tell(parcel, ActorRef.noSender());
-                break;
-            case 1: // Packages
-                mervilleTransportationActor.tell(parcel, ActorRef.noSender());
                 break;
             default:
                 return -1; // Indicate an error

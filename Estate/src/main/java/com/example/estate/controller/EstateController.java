@@ -31,6 +31,9 @@ public class EstateController {
     @Value("${database.address}")
     private String database = "";
 
+    @Value("${broker.address}")
+    private String broker = "";
+
     @ApiResponse(responseCode = "200", description = "Success")
     @Operation(summary = "Access via web browser", description = "Allows anyone get the service introduction via root path.")
     @GetMapping("/")
@@ -55,6 +58,12 @@ public class EstateController {
                 ParcelTrack parcelTrack = new ParcelTrack(desc, staff, formattedDateTime);
                 Parcel parcel = new Parcel(data, List.of(parcelTrack));
                 restTemplate.postForEntity(database + "/parcel/newParcel", parcel, Integer.class);
+                ResponseEntity<Integer> responseEntity = restTemplate.postForEntity(broker + "/distribute", parcel, Integer.class);
+                if (responseEntity.getBody() != null && responseEntity.getBody() == 0) {
+                    log.info("Broker distribute success");
+                } else {
+                    log.error("Broker distribute failed");
+                }
             } else {
                 log.error("Student " + data.getStudent() + " not exist.");
             }
