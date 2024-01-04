@@ -26,7 +26,6 @@ public class MQ implements ApplicationRunner {
     private static Boolean durable = false;
     private static Boolean autoAck = true;
 
-    private static Connection connection;
     @Resource
     private MongoTemplate mongoTemplate;
 
@@ -45,11 +44,12 @@ public class MQ implements ApplicationRunner {
         log.info("Connecting to rabbitMQServer:" + address + " ...");
         ConnectionFactory factory = new ConnectionFactory();
         factory.setUri(address);
-        connection = factory.newConnection();
-        Channel channel = connection.createChannel();
-        channel.queueDeclare("Parcel", durable, false, false, null);
-        channel.basicConsume("Parcel", autoAck, callBack, consumerTag -> {
-        });
+        try (Connection connection = factory.newConnection();
+             Channel channel = connection.createChannel();) {
+            channel.queueDeclare("Parcel", durable, false, false, null);
+            channel.basicConsume("Parcel", autoAck, callBack, consumerTag -> {
+            });
+        }
     }
 
     @Override
