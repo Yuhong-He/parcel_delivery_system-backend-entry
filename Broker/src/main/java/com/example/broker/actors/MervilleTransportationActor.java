@@ -17,7 +17,6 @@ public class MervilleTransportationActor extends AbstractActor {
     public Receive createReceive() {
         return receiveBuilder()
                 .match(Parcel.class, parcel -> {
-                    System.out.println("I am in MervilleTransportationActor");
                     if (parcel.getType() == 1 || parcel.getType() == 3) {
                         updateParcelTrack(parcel);
                     }
@@ -29,15 +28,13 @@ public class MervilleTransportationActor extends AbstractActor {
     private void updateParcelTrack(Parcel parcel) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         String formattedDateTime = LocalDateTime.now().format(formatter);
-        Integer createBy = -1;
-        ParcelTrack newTrack = new ParcelTrack("Broker send parcel to Merville Room", createBy, formattedDateTime);
+        ParcelTrack newTrack = new ParcelTrack("Broker send parcel to Merville Room", -1, true, -1, formattedDateTime);
         parcel.setTracks(List.of(newTrack));
 
         try {
             MQ.sendToDatabase(parcel);
         } catch (Exception e) {
             log.error("Exception during sending Parcel to MQ:" + e);
-            e.printStackTrace();
         }
     }
 }

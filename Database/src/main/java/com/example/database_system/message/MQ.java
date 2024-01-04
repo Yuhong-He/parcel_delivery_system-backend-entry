@@ -63,18 +63,18 @@ public class MQ implements ApplicationRunner {
     public void run(ApplicationArguments args) {
         new Thread(() -> {
             // MOM consumes Post requests
-            System.out.println("Bounding consume methods...");
+            log.info("Bounding consume methods...");
             try {
                 consumePost((consumerTag, delivery) -> {
-                    System.out.println("Received new post ");
+                    log.info("Received new post");
                     Parcel message = JSON.parseObject(delivery.getBody(), Parcel.class);
                     newParcelTrack(message);
                 });
             } catch (Exception e) {
-                log.info("MQ exception:" + e);
+                log.error("MQ exception:" + e);
                 e.printStackTrace();
             }
-            System.out.println("Consuming  Thread running...");
+            log.info("Consuming Thread running...");
         }).start();
     }
 
@@ -83,7 +83,7 @@ public class MQ implements ApplicationRunner {
             log.info("Adding Parceltrack" + parcelTrack);
         }
         Query query = new Query(Criteria.where("_id").is(parcel.getId()));
-        System.out.println(parcel.getTracks().get(0));
+        log.info(String.valueOf(parcel.getTracks().get(0)));
         Update update = new Update().push("tracks", parcel.getTracks().get(0));
         mongoTemplate.updateFirst(query, update, Parcel.class);
         log.info("Parceltrack added successfully");

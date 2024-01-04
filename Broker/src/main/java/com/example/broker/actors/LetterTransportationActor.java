@@ -5,18 +5,16 @@ import akka.actor.ActorRef;
 import com.example.broker.dto.Parcel;
 import com.example.broker.dto.ParcelTrack;
 import com.example.broker.message.MQ;
-import lombok.Data;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.extern.slf4j.Slf4j;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
-@Data
+@Slf4j
 public class LetterTransportationActor extends AbstractActor {
     private final ActorRef mervilleTransportationActor;
 
-    @Autowired
     public LetterTransportationActor(ActorRef mervilleTransportationActor) {
         this.mervilleTransportationActor = mervilleTransportationActor;
     }
@@ -25,10 +23,9 @@ public class LetterTransportationActor extends AbstractActor {
     public Receive createReceive() {
         return receiveBuilder()
                 .match(Parcel.class, parcel -> {
-                    System.out.println("I am in LetterTransportationActor");
                     if (parcel.getType() == 3) {
                         mervilleTransportationActor.tell(parcel, getSelf());
-                    }else {
+                    } else {
                         updateParcelTrack(parcel);
                     }
                 })
@@ -38,15 +35,13 @@ public class LetterTransportationActor extends AbstractActor {
     private void updateParcelTrack(com.example.broker.dto.Parcel parcel) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         String formattedDateTime = LocalDateTime.now().format(formatter);
-        Integer createBy = -1; // Not sure about User's ID
-        ParcelTrack newTrack = new ParcelTrack("Broker notify receiver", createBy, formattedDateTime);
+        ParcelTrack newTrack = new ParcelTrack("Broker notify receiver", -1, false, -1, formattedDateTime);
         parcel.setTracks(List.of(newTrack));
 
         try {
             MQ.sendToDatabase(parcel);
         } catch (Exception e) {
-            System.out.println("Exception during sending Parcel to MQ:" + e);
-            e.printStackTrace();
+            log.error("Exception during sending Parcel to MQ:" + e);
         }
     }
 }
