@@ -8,24 +8,17 @@ import com.example.estate.utils.ParcelUtils;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.data.mongodb.core.aggregation.*;
-import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import com.example.estate.service.UserService;
+import org.springframework.web.client.RestTemplate;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
-
-import static org.springframework.data.mongodb.core.aggregation.Aggregation.limit;
-import static org.springframework.data.mongodb.core.aggregation.Aggregation.skip;
 
 @Slf4j
 @RestController
@@ -33,11 +26,10 @@ import static org.springframework.data.mongodb.core.aggregation.Aggregation.skip
 @RequestMapping("/")
 public class EstateController {
 
-    @Autowired
-    private UserService userService;
+    RestTemplate restTemplate = new RestTemplate();
 
-    @Autowired
-    private MongoTemplate mongoTemplate;
+    @Value("${database.address}")
+    private String database = "";
 
     @ApiResponse(responseCode = "200", description = "Success")
     @Operation(summary = "Access via web browser", description = "Allows anyone get the service introduction via root path.")
@@ -54,7 +46,7 @@ public class EstateController {
     public void createParcel(@RequestBody ParcelInfo data,
                              @Parameter(description = "Estate Service Staff Account ID") @RequestParam("staff") int staff) {
         if (ParcelUtils.validateParcelCreate(data)) {
-            User u = userService.getStudentById(data.getStudent());
+            User u = restTemplate.getForObject(database + "/user/getStudentById?id=" + data.getStudent(), User.class);
             if (u != null) {
                 String desc = "Estate Service created parcel label";
                 LocalDateTime currentDateTime = LocalDateTime.now();
@@ -62,7 +54,7 @@ public class EstateController {
                 String formattedDateTime = currentDateTime.format(formatter);
                 ParcelTrack parcelTrack = new ParcelTrack(desc, staff, formattedDateTime);
                 Parcel parcel = new Parcel(data, List.of(parcelTrack));
-                mongoTemplate.save(parcel);
+                restTemplate.postForEntity(database + "/parcel/newParcel", parcel, Integer.class);
             } else {
                 log.error("Student " + data.getStudent() + " not exist.");
             }
@@ -72,43 +64,13 @@ public class EstateController {
     }
 
     @ApiResponse(responseCode = "200", description = "Success",
-            content = {@Content(mediaType = "application/json",
-                    schema = @Schema(implementation = CustomPage.class))})
+            content = {@Content(mediaType = "application/text")})
     @Operation(summary = "List parcels", description = "Allowed Estate Service Staff list parcels.")
     @GetMapping("/list")
-    public CustomPage getParcelList(@Parameter(description = "Page Number") @RequestParam("page") Integer pageNo) {
-        int size = 10;
-        int skip = (pageNo - 1) * size;
-        SkipOperation skipOperation = skip(skip);
-        LimitOperation limitOperation = limit(size);
-
-        AggregationOperation unwind = Aggregation.unwind("tracks");
-        AggregationOperation sort = Aggregation.sort(Sort.Direction.DESC, "tracks.create_at");
-        AggregationOperation group = Aggregation.group("_id")
-                .first("type").as("type")
-                .first("address1").as("address1")
-                .first("address2").as("address2")
-                .first("student").as("student")
-                .first("tracks").as("latestTrack");
-        AggregationOperation secondSort = Aggregation.sort(Sort.Direction.DESC, "latestTrack.create_at");
-        Aggregation aggregation = Aggregation.newAggregation(unwind, sort, group, secondSort, skipOperation, limitOperation);
-        AggregationResults<ParcelWithLatestTrack> results = mongoTemplate.aggregate(aggregation, "parcel", ParcelWithLatestTrack.class);
-        List<ParcelWithLatestTrack> parcels = results.getMappedResults();
-
-        List<ParcelWithStudentInfo> newList = new ArrayList<>();
-        for(ParcelWithLatestTrack p : parcels) {
-            User student = userService.getStudentById(p.getStudent());
-            ParcelTrack latestTrack = p.getLatestTrack();
-            ParcelWithStudentInfo parcelWithStudentInfo = new ParcelWithStudentInfo(
-                    p.getId(), new StudentInfo(student.getUsername(), student.getEmail()),
-                    p.getType(), p.getAddress1(), p.getAddress2(), latestTrack.getDescription(), latestTrack.getCreate_at());
-            newList.add(parcelWithStudentInfo);
-        }
-
-        final Query query = new Query();
-        long total = mongoTemplate.count(query, Parcel.class);
-        long pages = (long) Math.ceil((double) total / size);
-        return new CustomPage(newList, total, size, pageNo, pages);
+    public String getParcelList(@Parameter(description = "Page Number") @RequestParam("page") Integer pageNo) {
+        RestTemplate template = new RestTemplate();
+        ResponseEntity<String> responseEntity = template.getForEntity(database + "/parcel/getAllParcels?pageNo=" + pageNo, String.class);
+        return responseEntity.getBody();
     }
 
 }

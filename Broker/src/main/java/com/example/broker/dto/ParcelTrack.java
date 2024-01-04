@@ -24,8 +24,6 @@ public class ParcelTrack {
     @Schema(description = "Track Created Time", example = "2023-12-17 14:23:17")
     private String create_at;
 
-
-
     public ParcelTrack(ParcelTrackWithParcelID parcelTrackWithParcelID) {
         this.description = parcelTrackWithParcelID.getDescription();
         this.create_at = parcelTrackWithParcelID.getCreate_at();

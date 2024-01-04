@@ -4,13 +4,11 @@ import akka.actor.AbstractActor;
 import com.example.broker.dto.ParcelTrack;
 import com.example.broker.dto.Parcel;
 import com.example.broker.message.MQ;
-import io.swagger.v3.oas.annotations.Operation;
-import org.springframework.web.bind.annotation.PutMapping;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
-public class MervillTransportationActor extends AbstractActor {
+public class MervilleTransportationActor extends AbstractActor {
 
     @Override
     public Receive createReceive() {

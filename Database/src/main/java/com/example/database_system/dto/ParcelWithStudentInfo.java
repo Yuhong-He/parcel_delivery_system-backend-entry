@@ -5,8 +5,6 @@ import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
-import java.sql.Timestamp;
-
 @Data
 @AllArgsConstructor
 @Schema(description = "Parcel Data for Delivery System Staff")
@@ -38,6 +36,6 @@ public class ParcelWithStudentInfo {
 
     @NotNull
     @Schema(description = "Parcel Last Update Time", example = "2023-12-17 14:23:17")
-    private Timestamp lastUpdateAt;
+    private String lastUpdateAt;
 
 }

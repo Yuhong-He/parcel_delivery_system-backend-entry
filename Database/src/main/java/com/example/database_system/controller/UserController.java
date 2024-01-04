@@ -1,21 +1,18 @@
 package com.example.database_system.controller;
 
-import com.example.database_system.mybatis.User;
-import com.example.database_system.mybatis.UserService;
+import com.example.database_system.mybatis_service.User;
+import com.example.database_system.mybatis_service.UserService;
 import jakarta.annotation.Resource;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/database/user")
+@RequestMapping("/user")
 public class UserController {
 
     @Resource
     UserService userService;
 
-    @PostMapping("/getStudentsById")
+    @GetMapping("/getStudentById")
     public User getStudentsById(@RequestParam int id) {
         return userService.getStudentById(id);
     }

@@ -1,11 +1,9 @@
-package com.example.estate.service.impl;
+package com.example.database_system.mybatis_service;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.example.estate.entity.User;
-import com.example.estate.enumeration.UserTypeEnum;
-import com.example.estate.mapper.UserMapper;
-import com.example.estate.service.UserService;
+import com.example.database_system.enumeration.UserTypeEnum;
+import com.example.database_system.mapper.UserMapper;
 import org.springframework.stereotype.Service;
 
 @Service("userServiceImpl")

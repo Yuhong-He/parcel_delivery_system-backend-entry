@@ -1,6 +1,5 @@
-package com.example.estate.dto;
+package com.example.database_system.dto;
 
-import com.example.estate.entity.ParcelTrack;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -12,7 +11,7 @@ import org.springframework.data.mongodb.core.mapping.MongoId;
 @AllArgsConstructor
 @NoArgsConstructor
 @Schema(description = "Parcel with Latest Track Information")
-public class ParcelWithLatestTrack {
+public class ParcelDisplayForEstate {
 
     @NotNull
     @Schema(description = "Parcel ID", example = "9aed31b2-1577-4c9c-9778-f2101fa4cf46")
@@ -36,7 +35,11 @@ public class ParcelWithLatestTrack {
     private int student;
 
     @NotNull
-    @Schema(description = "Parcel Tracks", example = "{}, {}, {}")
-    private ParcelTrack latestTrack;
+    @Schema(description = "Track Description", example = "Estate Service created parcel label")
+    private String lastUpdateDesc;
+
+    @NotNull
+    @Schema(description = "Track Created Time", example = "2023-12-17 14:23:17")
+    private String lastUpdateAt;
 
 }

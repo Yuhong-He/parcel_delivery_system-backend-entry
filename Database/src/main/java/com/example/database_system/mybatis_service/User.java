@@ -1,4 +1,4 @@
-package com.example.database_system.mybatis;
+package com.example.database_system.mybatis_service;
 
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
@@ -40,10 +40,4 @@ public class User {
     @TableField("type")
     private int type;
 
-    public User(String username, String password, String email, int type) {
-        this.username = username;
-        this.password = password;
-        this.email = email;
-        this.type = type;
-    }
 }

@@ -11,11 +11,11 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 public class LetterTransportationActor extends AbstractActor {
-    private final ActorRef mervillTransportationActor;
+    private final ActorRef mervilleTransportationActor;
 
     @Autowired
     public LetterTransportationActor(ActorRef mervillTransportationActor) {
-        this.mervillTransportationActor = mervillTransportationActor;
+        this.mervilleTransportationActor = mervillTransportationActor;
     }
 
     @Override
@@ -23,7 +23,7 @@ public class LetterTransportationActor extends AbstractActor {
         return receiveBuilder()
                 .match(Parcel.class, parcel -> {
                     if (parcel.getType() == 3) {
-                        mervillTransportationActor.tell(parcel, getSelf());
+                        mervilleTransportationActor.tell(parcel, getSelf());
                     }else {
                         updateParcelTrack(parcel);
                     }
