@@ -29,4 +29,10 @@ public class UserController {
         }
         return idList;
     }
+
+    @GetMapping("/getPostmanEmail")
+    public String getPostmanEmail(@RequestParam int id) {
+        User postman = userService.getById(id);
+        return postman.getEmail();
+    }
 }

@@ -54,7 +54,8 @@ public class MQ implements ApplicationRunner {
         connection = factory.newConnection();
         Channel channel = connection.createChannel();
         channel.queueDeclare("Parcel", durable, false, false, null);
-        return channel;
+        channel.basicConsume("Parcel", autoAck, callBack, consumerTag -> {
+        });
     }
 
     @Override
@@ -76,7 +77,7 @@ public class MQ implements ApplicationRunner {
 
     private void newParcelTrack(Parcel parcel) {
         for (ParcelTrack parcelTrack : parcel.getTracks()) {
-            log.info("Adding Parceltrack" + parcelTrack);
+            log.info("Adding" + parcelTrack);
         }
         Query query = new Query(Criteria.where("_id").is(parcel.getId()));
         System.out.println(parcel.getTracks().get(0));
