@@ -73,7 +73,7 @@ public class ReceiverController {
 
             try {
                 MQ.sendToDatabase(parcel);
-                Email email = new Email(postmanEmail, "Register Verification Code",
+                Email email = new Email(postmanEmail, "Student confirmed address",
                         getConfirmAddressEmailBody(parcel.getAddress1() + ", " + parcel.getAddress2()));
                 restTemplate.postForEntity(mailUrl + "/send", EmailEncryptor.encrypt(email), String.class);
             } catch (Exception e) {
