@@ -141,6 +141,8 @@ public class UserController {
 
                             // 6. check verification code correct
                             if (!verificationCode.isEmpty() && code.equals(verificationCode)) {
+                                stringRedisTemplate.delete(email);
+                                stringRedisTemplate.delete(email + "|check_1_minute");
                                 User user = new User(username, pwd, email, type);
                                 userService.register(user);
                                 return Result.ok();

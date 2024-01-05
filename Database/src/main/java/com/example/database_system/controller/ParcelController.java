@@ -45,6 +45,13 @@ public class ParcelController {
         return 0;
     }
 
+    @Operation(description = "get a specific parcel", responses = {
+            @ApiResponse(description = "a Parcel Object") })
+    @GetMapping(value = "/getParcelWithId/{id}")
+    public Parcel getParcelWithId(@Parameter(description = "user's ID") @PathVariable String id){
+        return parcelRepository.findById(id).orElse(null);
+    }
+
     @Operation(description = "get parcels of a receiver")
     @GetMapping(value = "/getReceiverParcel")
     public CustomPage getReceiverParcel(@Parameter(description = "User's ID") @RequestParam int receiverId, @RequestParam int pageNo) {
@@ -114,13 +121,6 @@ public class ParcelController {
         long pages = (long) Math.ceil((double) total / size);
 
         return new CustomPage(newList, (int) total, size, pageNo, pages);
-    }
-
-    @Operation(description = "get a specific parcel", responses = {
-            @ApiResponse(description = "a Parcel Object") })
-    @GetMapping(value = "/getParcelWithId/{id}")
-    public Parcel getParcelWithId(@Parameter(description = "user's ID") @PathVariable String id){
-        return parcelRepository.findById(id).orElse(null);
     }
 
     @Operation(description = "Get all letters for a postman")
