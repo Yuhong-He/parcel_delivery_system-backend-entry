@@ -45,8 +45,6 @@ public class MQ implements ApplicationRunner {
         Channel channel = establishConnection();
         channel.basicConsume("Parcel", autoAck, callBack, consumerTag -> {
         });
-        channel.close();
-        connection.close();
     }
 
     public static Channel establishConnection() throws Exception {
@@ -61,21 +59,19 @@ public class MQ implements ApplicationRunner {
 
     @Override
     public void run(ApplicationArguments args) {
-        new Thread(() -> {
-            // MOM consumes Post requests
-            System.out.println("Bounding consume methods...");
-            try {
-                consumePost((consumerTag, delivery) -> {
-                    System.out.println("Received new post ");
-                    Parcel message = JSON.parseObject(delivery.getBody(), Parcel.class);
-                    newParcelTrack(message);
-                });
-            } catch (Exception e) {
-                log.info("MQ exception:" + e);
-                e.printStackTrace();
-            }
-            System.out.println("Consuming  Thread running...");
-        }).start();
+        // MOM consumes Post requests
+        System.out.println("Bounding consume methods...");
+        try {
+            consumePost((consumerTag, delivery) -> {
+                System.out.println("Received new post ");
+                Parcel message = JSON.parseObject(delivery.getBody(), Parcel.class);
+                newParcelTrack(message);
+            });
+        } catch (Exception e) {
+            log.info("MQ exception:" + e);
+            e.printStackTrace();
+        }
+        System.out.println("Consuming  Thread running...");
     }
 
     private void newParcelTrack(Parcel parcel) {
