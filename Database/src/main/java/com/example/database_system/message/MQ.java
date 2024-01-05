@@ -43,30 +43,22 @@ public class MQ implements ApplicationRunner {
         log.info("Connecting to rabbitMQServer:" + address + " ...");
         ConnectionFactory factory = new ConnectionFactory();
         factory.setUri(address);
-        try (
-                Connection connection = factory.newConnection();
-                Channel channel = connection.createChannel()
-        ) {
-            channel.queueDeclare("Parcel", durable, false, false, null);
-            channel.basicConsume("Parcel", autoAck, callBack, consumerTag -> {
-            });
-        }
+        Connection connection = factory.newConnection();
+        Channel channel = connection.createChannel();
+        channel.queueDeclare("Parcel", durable, false, false, null);
+        channel.basicConsume("Parcel", autoAck, callBack, consumerTag -> {
+        });
     }
 
     @Override
-    public void run(ApplicationArguments args) {
+    public void run(ApplicationArguments args) throws Exception{
         // MOM consumes Post requests
         log.info("Bounding consume methods...");
-        try {
             consumePost((consumerTag, delivery) -> {
                 log.info("Received new post");
                 Parcel message = JSON.parseObject(delivery.getBody(), Parcel.class);
                 newParcelTrack(message);
             });
-        } catch (Exception e) {
-            log.info("MQ exception:" + e);
-            e.printStackTrace();
-        }
         log.info("Consuming  Thread running...");
     }
 
