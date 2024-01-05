@@ -8,6 +8,7 @@
     <modules>
         <module>Database</module>
         <module>Postman</module>
+        <module>Merville</module>
         <module>Receiver</module>
         <module>Broker</module>
         <module>Estate</module>

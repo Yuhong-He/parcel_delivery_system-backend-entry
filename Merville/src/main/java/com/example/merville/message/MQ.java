@@ -1,12 +1,12 @@
-package org.example.receiver.message;
+package com.example.merville.message;
 
 import com.alibaba.fastjson2.JSON;
+import com.example.merville.dto.Parcel;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
 import com.rabbitmq.client.MessageProperties;
 import lombok.extern.slf4j.Slf4j;
-import org.example.receiver.entity.Parcel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -18,12 +18,11 @@ public class MQ {
     private static Boolean durable = false;
     private static Boolean autoAck = true;
 
-    private static  Connection connection;
     @Autowired
     private void setStaticFields(
             @Value("${MQ.address}") String s,
             @Value("#{new Boolean('${MQ.durable}')}") Boolean b1,
-            @Value("#{new Boolean('${MQ.autoAck}')}") Boolean b2) {
+            @Value("#{new Boolean('${MQ.autoAck}')}") Boolean b2){
         address = s;
         durable = b1;
         autoAck = b2;
@@ -32,16 +31,16 @@ public class MQ {
     public static void sendToDatabase(Parcel parcel) throws Exception {
         String message = JSON.toJSONString(parcel);
         establishConnection().basicPublish("", "Parcel", MessageProperties.PERSISTENT_TEXT_PLAIN, message.getBytes());
-        log.info("Sending Log: " + message + " to Parcel System...");}
+        log.info("Sending Log: " + message + " to Log System...");
+    }
 
     public static Channel establishConnection() throws Exception {
-        log.info("Connecting to rabbitMQServer: " + address + " ...");
+        log.info("Connecting to rabbitMQServer:"+address+" ...");
         ConnectionFactory factory = new ConnectionFactory();
         factory.setUri(address);
-        connection = factory.newConnection();
+        Connection connection = factory.newConnection();
         Channel channel = connection.createChannel();
         channel.queueDeclare("Parcel", durable, false, false, null);
         return channel;
     }
-
 }

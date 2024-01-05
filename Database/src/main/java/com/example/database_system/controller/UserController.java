@@ -29,4 +29,10 @@ public class UserController {
         }
         return idList;
     }
+
+    @GetMapping("/getUserEmail")
+    public String getUserEmail(@RequestParam int id) {
+        User user = userService.getById(id);
+        return user.getEmail();
+    }
 }

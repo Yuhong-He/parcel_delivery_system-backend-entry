@@ -5,7 +5,6 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Data
@@ -37,22 +36,4 @@ public class Parcel {
     @Schema(description = "Parcel Tracks", example = "[{}, {}, {}]")
     private List<ParcelTrack> tracks;
 
-    public void addTrack(ParcelTrack track) {
-        if (this.tracks == null) {
-            this.tracks = new ArrayList<>();
-        }
-        this.tracks.add(track);
-    }
-
-    @Override
-    public String toString() {
-        return "Parcel{" +
-                "id='" + id + '\'' +
-                ", type=" + type +
-                ", address1='" + address1 + '\'' +
-                ", address2='" + address2 + '\'' +
-                ", student=" + student +
-                ", tracks=" + tracks +
-                '}';
-    }
 }
