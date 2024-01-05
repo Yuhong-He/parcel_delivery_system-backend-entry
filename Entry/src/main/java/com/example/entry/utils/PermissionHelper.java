@@ -34,7 +34,7 @@ public class PermissionHelper {
 
     public static String[] mervilleStaff() {
         return new String[]{
-
+            "/parcel/confirmCollected"
         };
     }
 

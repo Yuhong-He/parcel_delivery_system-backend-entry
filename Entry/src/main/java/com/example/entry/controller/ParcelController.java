@@ -44,6 +44,9 @@ public class ParcelController {
     @Value("${address.postman}")
     private String postmanUrl = "";
 
+    @Value("${address.merville}")
+    private String mervilleUrl = "";
+
     RestTemplate template = new RestTemplate();
 
     @ApiResponse(responseCode = "200", description = "Success",
@@ -65,6 +68,9 @@ public class ParcelController {
         User currentUser = userService.getUserById(Math.toIntExact(BaseContext.getCurrentId()));
         if (currentUser.getType() == UserTypeEnum.EstateServiceStaff.getVal()) {
             ResponseEntity<String> responseEntity = template.getForEntity(estateUrl + "/list?page=" + pageNo, String.class);
+            return castCustomPage(responseEntity);
+        } else if (currentUser.getType() == UserTypeEnum.MervilleStaff.getVal()) {
+            ResponseEntity<String> responseEntity = template.getForEntity(mervilleUrl + "/getParcels?pageNo=" + pageNo, String.class);
             return castCustomPage(responseEntity);
         } else if (currentUser.getType() == UserTypeEnum.Postman.getVal()) {
             ResponseEntity<String> responseEntity = template.getForEntity(postmanUrl + "/getLetters?postmanId="  + BaseContext.getCurrentId()
@@ -112,6 +118,16 @@ public class ParcelController {
 
     @ApiResponse(responseCode = "200", description = "Success",
             content = {@Content(mediaType = "application/json",
+                    schema = @Schema(implementation = Result.class))})
+    @Operation(summary = "Merville confirm collected", description = "Allowed Merville Room staff confirm student has collected the parcel.")
+    @PostMapping("/confirmCollected")
+    public Result<Object> confirmCollected(@RequestParam String parcelId) {
+        template.postForEntity(mervilleUrl + "/collected?mervilleId=" + BaseContext.getCurrentId().intValue() + "&parcelId=" + parcelId, null, String.class);
+        return Result.ok();
+    }
+
+    @ApiResponse(responseCode = "200", description = "Success",
+            content = {@Content(mediaType = "application/json",
                     schema = @Schema(implementation = Object.class))})
     @Operation(summary = "Get tracks for a parcel", description = "Allowed all type of users get the tracks for a parcel.")
     @GetMapping("/tracks")
@@ -123,6 +139,9 @@ public class ParcelController {
         } else if (currentUser.getType() == UserTypeEnum.Postman.getVal()) {
             ResponseEntity<String> responseEntity = template.getForEntity(postmanUrl + "/getParcelTracks?postmanId=" + BaseContext.getCurrentId()
                     + "&parcelId=" + parcelId, String.class);
+            return castParcelTrackList(responseEntity);
+        } else if (currentUser.getType() == UserTypeEnum.MervilleStaff.getVal()) {
+            ResponseEntity<String> responseEntity = template.getForEntity(mervilleUrl + "/getParcelTracks?parcelId=" + parcelId, String.class);
             return castParcelTrackList(responseEntity);
         } else if (currentUser.getType() == UserTypeEnum.Student.getVal()) {
             ResponseEntity<String> responseEntity = template.getForEntity(receiverUrl + "/getParcelTracks?receiverId=" + BaseContext.getCurrentId()
