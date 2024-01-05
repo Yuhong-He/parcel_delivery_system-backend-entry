@@ -38,6 +38,7 @@ This application provides full process track as soon as the parcel arrives and m
 The application is abstracted as 3 layers, the application layer, the backend and frontend layer, and the Delivery system layer. System administrators can operate the application layer. Frontend and backend layer interacts with each other. At last, the delivery layer residents within the backend layer and is unseeable to the frontend layer. We used various distributed system techniques to implement the system.
 
 ## Final Team Project Report
+- [Report](https://github.com/Yuhong-He/ucd_parcel_backend/blob/main/Report.pdf)
 
 ## Demo Video
 [![YouTube](https://i9.ytimg.com/vi/H3viuY6ikGU/mqdefault.jpg?v=6598846b&sqp=CJSI4qwG&rs=AOn4CLAtMzZOq-Ia3kPXjfP5HMEl0VZ_gg)](https://youtu.be/H3viuY6ikGU)
