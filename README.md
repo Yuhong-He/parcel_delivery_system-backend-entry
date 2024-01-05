@@ -40,3 +40,4 @@ The application is abstracted as 3 layers, the application layer, the backend an
 ## Final Team Project Report
 
 ## Demo Video
+[![YouTube](https://i9.ytimg.com/vi/H3viuY6ikGU/mqdefault.jpg?v=6598846b&sqp=CJSI4qwG&rs=AOn4CLAtMzZOq-Ia3kPXjfP5HMEl0VZ_gg)](https://youtu.be/H3viuY6ikGU)
