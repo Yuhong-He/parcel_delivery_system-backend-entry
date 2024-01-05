@@ -32,7 +32,8 @@ public class TransportBrokerController {
 
     @Operation(summary = "dispatch a single parcel and send a notification of new letters to receivers")
     @PostMapping("/distribute")
-    public int newParcel(@Parameter(description = "A parcel to be dispatched") @RequestBody Parcel parcel) {
+    public int newParcel(@Parameter(description = "A parcel to be dispatched") @RequestBody Parcel parcel) throws InterruptedException {
+        Thread.sleep(1000); // sleep 1 second, prohibit the same timestamp with create parcel label
         switch(parcel.getType()) {
             case 1: // Packages
                 mervilleTransportationActor.tell(parcel, ActorRef.noSender());
