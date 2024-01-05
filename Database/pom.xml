@@ -42,13 +42,6 @@
             <scope>test</scope>
         </dependency>
 
-        <!-- spring security -->
-        <dependency>
-            <groupId>org.springframework.security</groupId>
-            <artifactId>spring-security-core</artifactId>
-            <version>6.0.1</version>
-        </dependency>
-
         <!-- mysql -->
         <dependency>
             <groupId>com.mysql</groupId>
@@ -79,43 +72,11 @@
             <version>3.5.3.1</version>
         </dependency>
 
-        <!-- jwt -->
-        <dependency>
-            <groupId>io.jsonwebtoken</groupId>
-            <artifactId>jjwt-api</artifactId>
-            <version>0.11.5</version>
-        </dependency>
-        <dependency>
-            <groupId>io.jsonwebtoken</groupId>
-            <artifactId>jjwt-impl</artifactId>
-            <version>0.11.5</version>
-            <scope>runtime</scope>
-        </dependency>
-        <dependency>
-            <groupId>io.jsonwebtoken</groupId>
-            <artifactId>jjwt-gson</artifactId>
-            <version>0.11.5</version>
-        </dependency>
-
         <!-- fastjson -->
         <dependency>
             <groupId>com.alibaba.fastjson2</groupId>
             <artifactId>fastjson2</artifactId>
             <version>2.0.23</version>
-        </dependency>
-
-        <!-- aliyun interface util-->
-        <dependency>
-            <groupId>com.github.suxingli</groupId>
-            <artifactId>aliyuncs</artifactId>
-            <version>1.0.1</version>
-        </dependency>
-
-        <!-- aliyun dm -->
-        <dependency>
-            <groupId>com.aliyun</groupId>
-            <artifactId>aliyun-java-sdk-dm</artifactId>
-            <version>3.3.2</version>
         </dependency>
 
         <dependency>

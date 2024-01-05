@@ -17,6 +17,6 @@ public class SpringDocConfig {
                 .info(new Info()
                         .title("Database System -  API")
                         .version("v1.0.0")
-                ).security(List.of(new SecurityRequirement().addList("Accesstoken")));
+                );
     }
 }
