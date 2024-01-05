@@ -11,9 +11,18 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Schema(description = "Parcel Track Information")
 public class ParcelTrack {
+
     @NotNull
     @Schema(description = "Track Description", example = "Estate Service created parcel label")
     private String description;
+
+    @NotNull
+    @Schema(description = "Postman User ID", example = "2")
+    private Integer postman;
+
+    @NotNull
+    @Schema(description = "Assigned to Merville Room?", example = "true")
+    private boolean merville_room;
 
     @NotNull
     @Schema(description = "User ID who create this Track", example = "4")
@@ -23,9 +32,4 @@ public class ParcelTrack {
     @Schema(description = "Track Created Time", example = "2023-12-17 14:23:17")
     private String create_at;
 
-    public ParcelTrack(ParcelTrackWithParcelID parcelTrackWithParcelID) {
-        this.description = parcelTrackWithParcelID.getDescription();
-        this.create_at = parcelTrackWithParcelID.getCreate_at();
-        this.create_by = parcelTrackWithParcelID.getCreate_by();
-    }
 }

@@ -68,6 +68,7 @@ public class PostmanController {
         Parcel parcel = restTemplate.getForObject(database + "/parcel/getParcelWithId/{id}", Parcel.class, parcelId);
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         String formattedDateTime = LocalDateTime.now().format(formatter);
+        assert parcel != null;
         parcel.setTracks(List.of(new ParcelTrack("Postman delivered the parcel", postmanId, false, postmanId, formattedDateTime)));
         try {
             MQ.sendToDatabase(parcel);

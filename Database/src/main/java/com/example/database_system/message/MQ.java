@@ -26,7 +26,6 @@ public class MQ implements ApplicationRunner {
     private static Boolean durable = false;
     private static Boolean autoAck = true;
 
-    private static Connection connection;
     @Resource
     private MongoTemplate mongoTemplate;
 
@@ -40,25 +39,27 @@ public class MQ implements ApplicationRunner {
         autoAck = b2;
     }
 
-
     public static void consumePost(DeliverCallback callBack) throws Exception {
         log.info("Connecting to rabbitMQServer:" + address + " ...");
         ConnectionFactory factory = new ConnectionFactory();
         factory.setUri(address);
-        connection = factory.newConnection();
-        Channel channel = connection.createChannel();
-        channel.queueDeclare("Parcel", durable, false, false, null);
-        channel.basicConsume("Parcel", autoAck, callBack, consumerTag -> {
-        });
+        try (
+                Connection connection = factory.newConnection();
+                Channel channel = connection.createChannel()
+        ) {
+            channel.queueDeclare("Parcel", durable, false, false, null);
+            channel.basicConsume("Parcel", autoAck, callBack, consumerTag -> {
+            });
+        }
     }
 
     @Override
     public void run(ApplicationArguments args) {
         // MOM consumes Post requests
-        System.out.println("Bounding consume methods...");
+        log.info("Bounding consume methods...");
         try {
             consumePost((consumerTag, delivery) -> {
-                System.out.println("Received new post ");
+                log.info("Received new post");
                 Parcel message = JSON.parseObject(delivery.getBody(), Parcel.class);
                 newParcelTrack(message);
             });
@@ -66,7 +67,7 @@ public class MQ implements ApplicationRunner {
             log.info("MQ exception:" + e);
             e.printStackTrace();
         }
-        System.out.println("Consuming  Thread running...");
+        log.info("Consuming  Thread running...");
     }
 
     private void newParcelTrack(Parcel parcel) {
@@ -74,7 +75,7 @@ public class MQ implements ApplicationRunner {
             log.info("Adding" + parcelTrack);
         }
         Query query = new Query(Criteria.where("_id").is(parcel.getId()));
-        System.out.println(parcel.getTracks().get(0));
+        log.info(String.valueOf(parcel.getTracks().get(0)));
         Update update = new Update().push("tracks", parcel.getTracks().get(0));
         mongoTemplate.updateFirst(query, update, Parcel.class);
         log.info("Parceltrack added successfully");

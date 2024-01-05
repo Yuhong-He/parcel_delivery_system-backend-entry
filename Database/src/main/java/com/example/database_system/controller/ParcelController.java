@@ -9,6 +9,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.annotation.Resource;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -22,6 +23,7 @@ import java.util.List;
 
 import static org.springframework.data.mongodb.core.aggregation.Aggregation.*;
 
+@Slf4j
 @RestController
 @RequestMapping("/parcel")
 public class ParcelController {
@@ -38,7 +40,7 @@ public class ParcelController {
     @PostMapping(value = "/newParcel")
     public int newParcel(@Parameter(description = "an Parcel Object") @RequestBody Parcel parcel) {
         // implemented using mom
-        System.out.println(parcel+"received, saving it...");
+        log.info(parcel + " received, saving it...");
         parcelRepository.save(parcel);
         return 0;
     }

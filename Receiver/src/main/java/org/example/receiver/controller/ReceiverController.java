@@ -68,7 +68,7 @@ public class ReceiverController {
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
             String formattedDateTime = LocalDateTime.now().format(formatter);
             int postmanId = parcel.getTracks().get(parcel.getTracks().size() - 1).getPostman();
-            String postmanEmail = restTemplate.getForObject(database + "/user/getPostmanEmail?id=" + postmanId, String.class);
+            String postmanEmail = restTemplate.getForObject(database + "/user/getUserEmail?id=" + postmanId, String.class);
             parcel.setTracks(List.of(new ParcelTrack("Receiver Confirmed the address", receiverId, formattedDateTime)));
 
             try {
