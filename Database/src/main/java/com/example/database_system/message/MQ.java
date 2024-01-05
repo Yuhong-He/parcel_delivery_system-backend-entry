@@ -39,13 +39,14 @@ public class MQ implements ApplicationRunner {
         autoAck = b2;
     }
 
-
     public static void consumePost(DeliverCallback callBack) throws Exception {
         log.info("Connecting to rabbitMQServer:" + address + " ...");
         ConnectionFactory factory = new ConnectionFactory();
         factory.setUri(address);
-        try (Connection connection = factory.newConnection();
-             Channel channel = connection.createChannel();) {
+        try (
+                Connection connection = factory.newConnection();
+                Channel channel = connection.createChannel()
+        ) {
             channel.queueDeclare("Parcel", durable, false, false, null);
             channel.basicConsume("Parcel", autoAck, callBack, consumerTag -> {
             });
@@ -55,10 +56,10 @@ public class MQ implements ApplicationRunner {
     @Override
     public void run(ApplicationArguments args) {
         // MOM consumes Post requests
-        System.out.println("Bounding consume methods...");
+        log.info("Bounding consume methods...");
         try {
             consumePost((consumerTag, delivery) -> {
-                System.out.println("Received new post ");
+                log.info("Received new post");
                 Parcel message = JSON.parseObject(delivery.getBody(), Parcel.class);
                 newParcelTrack(message);
             });
@@ -66,7 +67,7 @@ public class MQ implements ApplicationRunner {
             log.info("MQ exception:" + e);
             e.printStackTrace();
         }
-        System.out.println("Consuming  Thread running...");
+        log.info("Consuming  Thread running...");
     }
 
     private void newParcelTrack(Parcel parcel) {
