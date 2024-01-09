@@ -41,4 +41,4 @@ The application is abstracted as 3 layers, the application layer, the backend an
 - [Report](https://github.com/Yuhong-He/ucd_parcel_backend/blob/main/Report.pdf)
 
 ## Demo Video
-[![YouTube](https://i9.ytimg.com/vi/H3viuY6ikGU/mqdefault.jpg?v=6598846b&sqp=CJSI4qwG&rs=AOn4CLAtMzZOq-Ia3kPXjfP5HMEl0VZ_gg)](https://youtu.be/H3viuY6ikGU)
+[![YouTube](https://i.ibb.co/Y0kp9gc/Screenshot-2024-01-05-at-22-36-10.png)](https://youtu.be/H3viuY6ikGU)
